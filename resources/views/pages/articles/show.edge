@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html>
+<html data-bs-theme="dark">
 
 <head>
   <meta charset="utf-8">
@@ -10,7 +10,9 @@
 </head>
 
 <body>
-
+  <header>
+    @include('partials/global-nav')
+  </header>
   <main class="container">
     <article class="">
       <h1>{{ article.title }}</h1>

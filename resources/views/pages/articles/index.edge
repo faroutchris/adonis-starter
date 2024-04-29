@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html>
+<html data-bs-theme="dark">
 
 <head>
   <meta charset="utf-8">
@@ -10,7 +10,18 @@
 </head>
 
 <body>
+  <header>
+    @include('partials/global-nav')
+  </header>
   <div class="container mt-5">
+    <form method="GET" class="mb-4">
+      <select class="form-select" aria-label="Filter by tags" id="filter" name="filter" onchange="this.form.submit()">
+        <option selected>Filter by tags</option>
+        @each(tag in tags)
+        <option value="{{ tag }}">{{ capitalCase(tag) }}</option>
+        @end
+      </select>
+    </form>
     <ul class="list-group mb-4">
       @each((article, index) in articles)
       <li class="list-group-item">

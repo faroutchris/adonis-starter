@@ -4,6 +4,19 @@ import { MarkdownFile } from '@dimerapp/markdown'
 import { toHtml } from '@dimerapp/markdown/utils'
 import { readFile, readdir } from 'node:fs/promises'
 
+export type MarkdownData = {
+  slug: string
+  article: {
+    contents: string
+    summary?: string | undefined
+    toc?: string | undefined
+    excerpt?: string | undefined
+  }
+  frontmatter: {
+    [key: string]: any
+  }
+}
+
 // Figure out how IOC container works so I can create several instances with different configuration
 
 export default class MarkdownFileService {
@@ -43,7 +56,7 @@ export default class MarkdownFileService {
       })
   }
 
-  static async read(slug: string) {
+  static async read(slug: string): Promise<MarkdownData> {
     try {
       const file = await this.readFile(slug)
       const markdown = new MarkdownFile(file.toString())
