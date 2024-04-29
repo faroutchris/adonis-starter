@@ -28,22 +28,15 @@ export default class MarkdownFileService {
     return filename.replace('.md', '')
   }
 
-  private static readFile(slug: string) {
+  private static async readFile(slug: string) {
     try {
       const url = app.makeURL(`resources/articles/${slug}.md`)
-      return readFile(url, 'utf-8')
+      return await readFile(url, 'utf-8')
     } catch (error) {
-      console.log(error)
-      throw new Exception('Failed to read Articles directory', { status: 500 })
-    }
-  }
-
-  static async getSlugs() {
-    try {
-      const dir = await readdir('resources/articles')
-      return dir.filter(this.isMarkdown).map(this.extractSlug)
-    } catch (error) {
-      throw new Exception('Failed to read Articles directory', { status: 500 })
+      throw new Exception('Article not found', {
+        code: 'E_NOT_FOUND',
+        status: 404,
+      })
     }
   }
 
@@ -56,19 +49,37 @@ export default class MarkdownFileService {
       })
   }
 
+  static async getSlugs() {
+    try {
+      const dir = await readdir('resources/articles')
+      return dir.filter(this.isMarkdown).map(this.extractSlug)
+    } catch (error) {
+      throw new Exception('Failed to read Articles directory', { status: 500 })
+    }
+  }
+
+  static async process(file: string) {
+    try {
+      const markdown = new MarkdownFile(file)
+      await markdown.process()
+      return markdown
+    } catch (error) {
+      throw new Exception('Processing error', {
+        code: 'E_PROCESSING',
+        status: 500,
+      })
+    }
+  }
+
   static async read(slug: string): Promise<MarkdownData> {
     try {
       const file = await this.readFile(slug)
-      const markdown = new MarkdownFile(file.toString())
-      await markdown.process()
+      const markdown = await this.process(file)
       const article = toHtml(markdown)
       const frontmatter = markdown.frontmatter
       return { slug, article, frontmatter }
     } catch (error) {
-      throw new Exception('Article not found', {
-        code: 'E_NOT_FOUND',
-        status: 404,
-      })
+      throw error
     }
   }
 }
