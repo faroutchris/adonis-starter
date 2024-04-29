@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Articles</title>
+
+  @vite(['resources/css/app.css', 'resources/js/app.js'])
+</head>
+
+<body>
+  <div class="container mt-5">
+    <ul class="list-group mb-4">
+      @each((article, index) in articles)
+      <li class="list-group-item">
+        <a href="{{ route('articles.show', { slug: article.slug }) }}">
+          {{ article.title }}
+        </a>
+        <p>{{ article.description }}</p>
+      </li>
+      @end
+    </ul>
+    <p>
+      <a href="{{ route('home') }}">Back to homepage</a>
+    </p>
+  </div>
+</body>
+
+</html>

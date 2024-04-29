@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Movies</title>
+
+  @vite(['resources/css/app.css', 'resources/js/app.js'])
+</head>
+
+<body>
+
+  <main class="container">
+    <article class="">
+      <h1>{{ article.title }}</h1>
+      {{{ article.html }}}
+      <aside>{{ article.author }}</aside>
+      <time>Published: {{ article.pubDate }}</time>
+    </article>
+    <a href="{{ route('articles.index') }}">Back to articles</a>
+  </main>
+
+
+</body>
+
+</html>
