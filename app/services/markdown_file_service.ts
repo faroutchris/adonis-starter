@@ -33,11 +33,41 @@ export default class MarkdownFileService {
       const url = app.makeURL(`resources/articles/${slug}.md`)
       return await readFile(url, 'utf-8')
     } catch (error) {
-      throw new Exception('Article not found', {
+      throw new Exception(`Article not found: ${error.message}`, {
         code: 'E_NOT_FOUND',
         status: 404,
       })
     }
+  }
+
+  private static async process(file: string) {
+    try {
+      const markdown = new MarkdownFile(file)
+      await markdown.process()
+      return markdown
+    } catch (error) {
+      throw new Exception(`Processing error: ${error.message}`, {
+        code: 'E_PROCESSING',
+        status: 500,
+      })
+    }
+  }
+
+  static async getSlugs() {
+    try {
+      const dir = await readdir('resources/articles')
+      return dir.filter(this.isMarkdown).map(this.extractSlug)
+    } catch (error) {
+      throw new Exception(`Failed to get slugs: ${error.message}`, { status: 500 })
+    }
+  }
+
+  static async read(slug: string): Promise<MarkdownData> {
+    const file = await this.readFile(slug)
+    const markdown = await this.process(file)
+    const article = toHtml(markdown)
+    const frontmatter = markdown.frontmatter
+    return { slug, article, frontmatter }
   }
 
   static async readAll(slugs: string[]) {
@@ -47,39 +77,5 @@ export default class MarkdownFileService {
       .map((result) => {
         return result.value
       })
-  }
-
-  static async getSlugs() {
-    try {
-      const dir = await readdir('resources/articles')
-      return dir.filter(this.isMarkdown).map(this.extractSlug)
-    } catch (error) {
-      throw new Exception('Failed to read Articles directory', { status: 500 })
-    }
-  }
-
-  static async process(file: string) {
-    try {
-      const markdown = new MarkdownFile(file)
-      await markdown.process()
-      return markdown
-    } catch (error) {
-      throw new Exception('Processing error', {
-        code: 'E_PROCESSING',
-        status: 500,
-      })
-    }
-  }
-
-  static async read(slug: string): Promise<MarkdownData> {
-    try {
-      const file = await this.readFile(slug)
-      const markdown = await this.process(file)
-      const article = toHtml(markdown)
-      const frontmatter = markdown.frontmatter
-      return { slug, article, frontmatter }
-    } catch (error) {
-      throw error
-    }
   }
 }
