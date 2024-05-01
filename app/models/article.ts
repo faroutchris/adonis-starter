@@ -45,24 +45,4 @@ export default class Article {
     const markdown = await MarkdownFileService.read(slug)
     return this.constructFromMarkdown(markdown)
   }
-
-  /**
-   * Consider extracting methods into an ArticlesService which works with collections of articles
-   */
-
-  static orderByDate(direction: 'asc' | 'desc', articles: Article[]) {
-    return articles.sort((a, b) => {
-      const unixA = a.pubDate.toUnixInteger()
-      const unixB = b.pubDate.toUnixInteger()
-      return direction === 'asc' ? unixA - unixB : unixB - unixA
-    })
-  }
-
-  static extractTags(articles: Article[]) {
-    return [...new Set(articles.flatMap((article) => article.tags))]
-  }
-
-  static filterByTag(tag: string, articles: Article[]) {
-    return articles.filter((article) => article.tags.some((_tag) => _tag === tag))
-  }
 }
