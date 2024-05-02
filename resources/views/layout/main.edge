@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html data-bs-theme="dark">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Red Digital - {{ $props.get('title') }}</title>
+
+  @vite(['resources/css/app.css', 'resources/js/app.js'])
+</head>
+
+<body>
+  <header>
+    @include('partials/global-nav')
+  </header>
+
+  {{{ await $slots.main() }}}
+
+  <footer></footer>
+
+  {{-- <div class="toast-container position-fixed bottom-0 end-0 m-4" aria-live="polite" aria-atomic="true">
+    <div class="toast bg-danger-subtle show border-0" role="alert" aria-live="assertive" aria-atomic="true">
+      <div class="toast-header bg-danger-subtle border-0">
+        <strong class="me-auto">Error</strong>
+        <button type="button" class="btn-close ms-2" data-bs-dismiss="toast" aria-label="Close">
+          <span aria-hidden="true"></span>
+        </button>
+      </div>
+      <div class="toast-body">
+        <span class="me-auto">Something went terribly wrong</span>
+      </div>
+    </div>
+    <div class="toast show bg-success-subtle border-0" role="alert" aria-live="assertive" aria-atomic="true">
+      <div class="toast-header bg-success-subtle border-0">
+        <strong class="me-auto">Success</strong>
+        <button type="button" class="btn-close ms-2" data-bs-dismiss="toast" aria-label="Close">
+          <span aria-hidden="true"></span>
+        </button>
+      </div>
+      <div class="toast-body">
+        Hello, world! This is a toast message.
+      </div>
+    </div>
+    <div class="toast show" role="alert" aria-live="assertive" aria-atomic="true">
+      <div class="toast-header">
+        <strong class="me-auto">Bootstrap</strong>
+        <small>11 mins ago</small>
+        <button type="button" class="btn-close ms-2 mb-1" data-bs-dismiss="toast" aria-label="Close">
+          <span aria-hidden="true"></span>
+        </button>
+      </div>
+      <div class="toast-body">
+        Hello, world! This is a toast message.
+      </div>
+    </div>
+  </div> --}}
+</body>
+
+</html>

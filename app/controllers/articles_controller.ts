@@ -5,9 +5,10 @@ import type { HttpContext } from '@adonisjs/core/http'
 export default class ArticlesController {
   async index({ view, request }: HttpContext) {
     let articles = await Article.findAll()
-    const { order, tag, author } = request.qs()
     const tags = ArticlesService.extractTags(articles)
     const authors = ArticlesService.extractAuthors(articles)
+
+    const { order, tag, author } = request.qs()
     articles = ArticlesService.orderByDate(order || 'asc', articles)
     articles = ArticlesService.filterByQuery({ tag, author }, articles)
 
@@ -15,7 +16,8 @@ export default class ArticlesController {
       articles,
       tags,
       authors,
-      filters: { order, tag, author },
+      order,
+      filters: { tag, author },
     })
   }
 

@@ -1,86 +1,73 @@
-<!DOCTYPE html>
-<html data-bs-theme="dark">
-
-<head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Articles</title>
-
-  @vite(['resources/css/app.css', 'resources/js/app.js'])
-</head>
-
-<body>
-  <header>
-    @include('partials/global-nav')
-  </header>
-  <div class="container mt-5">
-    <form method="GET" class="mb-4">
-      <div class="row g-3 align-items-center">
-        <!-- order by date -->
-        <div class="col col-auto mt-2 mt-lg-0">
-          <select class="form-select form-control" aria-label="Order by date" id="order" name="order"
-            onchange="this.form.submit()">
-            <option {{ html.attrs({ value: "asc" , selected: order==='asc' }) }}>Date Ascending</option>
-            <option {{ html.attrs({ value: "desc" , selected: order==='desc' }) }}>Date Descending</option>
-          </select>
-        </div>
-        <!-- filter by author -->
-        <div class="col col-auto mt-2 mt-lg-0">
-          <select class="form-select form-control" aria-label="Filter by tags" id="author" name="author"
-            onchange="this.form.submit()">
-            <option {{ html.attrs({ selected: !filters.author, disabled: true }) }}>Filter by authors</option>
-            @each(author in authors)
-            <option {{ html.attrs({ value: author, selected: filters.author===author }) }}>
-              {{ capitalCase(author) }}
-            </option>
-            @end
-          </select>
-        </div>
-        <!-- filter by tags -->
-        <div class="col col-auto mt-2 mt-lg-0">
-          <select class="form-select form-control" aria-label="Filter by tags" id="tag" name="tag"
-            onchange="this.form.submit()">
-            <option {{ html.attrs({ selected: !filters.tag, disabled: true }) }}>Filter by tags</option>
-            @each(tag in tags)
-            <option {{ html.attrs({ value: tag, selected: filters.tag===tag }) }}>
-              {{ capitalCase(tag) }}
-            </option>
-            @end
-          </select>
-        </div>
-        <!-- clear -->
-        @if(filters.tag || filters.author)
-        <div class="col col-auto mt-2 mt-lg-0">
-          <a class="small text-decoration-none" href="{{ route('articles.index') }}">
-            Clear filters
-          </a>
-        </div>
-        @end
+@component('layout/main', {
+title: "Blog"
+})
+{{inspect(order)}}
+<div class="container mt-5">
+  <form method="GET" class="mb-4">
+    <div class="row g-3 align-items-center">
+      <!-- order by date -->
+      <div class="col col-auto mt-2 mt-lg-0">
+        <select class="form-select form-control" aria-label="Order by date" id="order" name="order"
+          onchange="this.form.submit()">
+          <option {{ html.attrs({ value: "asc" , selected: order==='asc' }) }}>Date Ascending</option>
+          <option {{ html.attrs({ value: "desc" , selected: order==='desc' }) }}>Date Descending</option>
+        </select>
       </div>
-    </form>
-    @if(articles.length)
-    <ul class="list-group mb-4">
-      @each((article, index) in articles)
-      <li class="list-group-item">
-        <a href="{{ route('articles.show', { slug: article.slug }) }}">
-          {{ article.title }}
+      <!-- filter by author -->
+      <div class="col col-auto mt-2 mt-lg-0">
+        <select class="form-select form-control" aria-label="Filter by tags" id="author" name="author"
+          onchange="this.form.submit()">
+          <option {{ html.attrs({ selected: !filters.author, disabled: true }) }}>Filter by authors</option>
+          @each(author in authors)
+          <option {{ html.attrs({ value: author, selected: filters.author===author }) }}>
+            {{ capitalCase(author) }}
+          </option>
+          @end
+        </select>
+      </div>
+      <!-- filter by tags -->
+      <div class="col col-auto mt-2 mt-lg-0">
+        <select class="form-select form-control" aria-label="Filter by tags" id="tag" name="tag"
+          onchange="this.form.submit()">
+          <option {{ html.attrs({ selected: !filters.tag, disabled: true }) }}>Filter by tags</option>
+          @each(tag in tags)
+          <option {{ html.attrs({ value: tag, selected: filters.tag===tag }) }}>
+            {{ capitalCase(tag) }}
+          </option>
+          @end
+        </select>
+      </div>
+      <!-- clear -->
+      @if(filters.tag || filters.author)
+      <div class="col col-auto mt-2 mt-lg-0">
+        <a class="small text-decoration-none" href="{{ route('articles.index') }}">
+          Clear filters
         </a>
-        <p>{{ article.description }}</p>
-      </li>
-      @end
-    </ul>
-    @else
-    <div class="card mb-4">
-      <div class="card-body text-center">
-        <p class="card-text"> Nothing here.</p>
-        <a class="btn btn-primary card-link" href="{{ route('articles.index') }}">Clear filters</a>
       </div>
+      @end
     </div>
+  </form>
+  @if(articles.length)
+  <ul class="list-group mb-4">
+    @each((article, index) in articles)
+    <li class="list-group-item">
+      <a href="{{ route('articles.show', { slug: article.slug }) }}">
+        {{ article.title }}
+      </a>
+      <p>{{ article.description }}</p>
+    </li>
     @end
-    <p>
-      <a href="{{ route('home') }}">Back to homepage</a>
-    </p>
+  </ul>
+  @else
+  <div class="card mb-4">
+    <div class="card-body text-center">
+      <p class="card-text"> Nothing here.</p>
+      <a class="btn btn-primary card-link" href="{{ route('articles.index') }}">Clear filters</a>
+    </div>
   </div>
-</body>
-
-</html>
+  @end
+  <p>
+    <a href="{{ route('home') }}">Back to homepage</a>
+  </p>
+</div>
+@end
