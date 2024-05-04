@@ -1,0 +1,46 @@
+version: '3.8'
+
+services:
+  adonis:
+    image: adonis_web
+    container_name: adonis_web
+    restart: unless-stopped
+    build:
+      context: .
+      target: build
+    ports:
+      - ${PORT}:${PORT}
+      - 9229:9229
+    env_file:
+      - .env
+    command: node build/bin/server.js
+    volumes:
+      - ./:/home/node/app
+      - /home/node/app/node_modules
+    depends_on:
+      db:
+        condition: service_healthy
+
+  db:
+    image: postgres
+    restart: always
+    environment:
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+      POSTGRES_USER: ${DB_USER}
+      POSTGRES_DB: ${DB_DATABASE}
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "sh -c 'pg_isready -U ${DB_USER} -d ${DB_DATABASE}'"]
+      interval: 10s
+      timeout: 3s
+      retries: 3
+
+  adminer:
+    image: adminer
+    restart: always
+    ports:
+      - 9090:8080
+
+volumes:
+  pgdata:

@@ -30,7 +30,7 @@ export default class MarkdownFileService {
 
   private static async readFile(slug: string) {
     try {
-      const url = app.makeURL(`resources/articles/${slug}.md`)
+      const url = app.makeURL(`public/articles/${slug}.md`)
       return await readFile(url, 'utf-8')
     } catch (error) {
       throw new Exception(`Article not found: ${error.message}`, {
@@ -55,7 +55,7 @@ export default class MarkdownFileService {
 
   static async getSlugs() {
     try {
-      const dir = await readdir('resources/articles')
+      const dir = await readdir('public/articles')
       return dir.filter(this.isMarkdown).map(this.extractSlug)
     } catch (error) {
       throw new Exception(`Failed to get slugs: ${error.message}`, { status: 500 })
@@ -74,7 +74,8 @@ export default class MarkdownFileService {
     const results = await Promise.allSettled(slugs.map((slug) => MarkdownFileService.read(slug)))
     return results
       .filter((result) => result.status === 'fulfilled')
-      .map((result) => {
+      .map((_result) => {
+        const result = _result as PromiseFulfilledResult<MarkdownData>
         return result.value
       })
   }
