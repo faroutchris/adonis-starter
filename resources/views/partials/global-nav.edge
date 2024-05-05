@@ -24,19 +24,29 @@
             Blog
           </a>
         </li>
+        @if(auth.user)
+        <li class="nav-item dropdown">
+          <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+            {{ auth.user.name }}
+          </a>
+          <ul class="dropdown-menu">
+            <li><a class="dropdown-item" href="#">Some action</a></li>
+            <li>
+              <form method="POST" action="{{ route('auth.logout') }}">
+                {{ csrfField() }}
+                <button type="submit" class="btn-link dropdown-item">Log Out</button>
+              </form>
+            </li>
+          </ul>
+        </li>
+        @else
+        <li class="nav-item">
+          <a class="nav-link" href="{{ route('auth.login.show') }}">Login</a>
+        </li>
         <li class="nav-item">
           <a class="nav-link" href="{{ route('auth.register.show') }}">Register</a>
         </li>
-        <li class="nav-item dropdown">
-          <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-            Dropdown link
-          </a>
-          <ul class="dropdown-menu">
-            <li><a class="dropdown-item" href="#">Action</a></li>
-            <li><a class="dropdown-item" href="#">Another action</a></li>
-            <li><a class="dropdown-item" href="#">Something else here</a></li>
-          </ul>
-        </li>
+        @end
       </ul>
     </div>
   </div>
