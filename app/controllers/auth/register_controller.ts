@@ -1,3 +1,5 @@
+import User from '#models/user'
+import { registerValidator } from '#validators/auth'
 import type { HttpContext } from '@adonisjs/core/http'
 
 export default class RegisterController {
@@ -5,7 +7,9 @@ export default class RegisterController {
     return view.render('pages/auth/register')
   }
 
-  async store({ response }: HttpContext) {
-    return response.redirect('index')
+  async store({ request, response }: HttpContext) {
+    const form = await request.validateUsing(registerValidator)
+    User.create(form)
+    return response.redirect().toRoute('home')
   }
 }

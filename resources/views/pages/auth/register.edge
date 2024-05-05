@@ -12,24 +12,30 @@ title: "Register Account"
         <div class="card-body">
           <form method="POST" action="{{ route('auth.register.store') }}">
             {{ csrfField() }}
-            <div class=" row mb-3">
-              <label for="name" class="col-sm-3 col-form-label">Name</label>
-              <div class="col-sm-9">
-                <input type="text" class="form-control" id="name">
-              </div>
-            </div>
-            <div class="row mb-3">
-              <label for="email" class="col-sm-3 col-form-label">Email</label>
-              <div class="col-sm-9">
-                <input type="email" class="form-control" id="email">
-              </div>
-            </div>
-            <div class="row mb-3">
-              <label for="password" class="col-sm-3 col-form-label">Password</label>
-              <div class="col-sm-9">
-                <input type="password" class="form-control" id="password">
-              </div>
-            </div>
+
+            @!formInput({
+            label: 'Name',
+            name: 'name',
+            id: 'name',
+            errorKey: 'errors.name'
+            })
+
+            @!formInput({
+            label: 'Email',
+            name: 'email',
+            id: 'email',
+            type: 'email',
+            errorKey: 'errors.email'
+            })
+
+            @!formInput({
+            label: 'Password',
+            name: 'password',
+            id: 'password',
+            type: 'password',
+            errorKey: 'errors.password'
+            })
+
             <button type="submit" class="btn btn-primary">Register</button>
           </form>
         </div>

@@ -8,7 +8,7 @@ export default class ArticlesController {
     const tags = ArticlesService.extractTags(articles)
     const authors = ArticlesService.extractAuthors(articles)
 
-    const { order, tag, author } = request.qs()
+    const { order, tag, author } = request.all()
     articles = ArticlesService.orderByDate(order || 'asc', articles)
     articles = ArticlesService.filterByQuery({ tag, author }, articles)
 
