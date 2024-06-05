@@ -1,10 +1,20 @@
 @let(value = $props.value || old(name) || '')
 
+@let(formAttributes = {
+value: value , type: type || '' , id: id || '' , name: name || ''
+})
+
+@let(formClasses = [
+'form-control',
+{ "is-invalid" : flashMessages.has($props.errorKey) }
+])
+
 <div class="row mb-3">
-  <label for="name" class="col-sm-3 col-form-label">{{ $props.label }}</label>
-  <div class="col-sm-9">
-    <input {{ html.attrs({ value: value , type: type || '' , id: id || '' , name: name || '' , class: [ 'form-control' ,
-      { "is-invalid" : flashMessages.has($props.errorKey) } ] }) }}>
+  <label class="col-sm-4 col-form-label" {{ html.attrs({ for: name })}}>
+    {{ $props.label }}
+  </label>
+  <div class="col-sm-8">
+    <input {{ html.attrs({ ...formAttributes , class: formClasses }) }}>
     @if (flashMessages.has($props.errorKey))
     <div class="invalid-feedback">
       {{ flashMessages.get($props.errorKey) }}

@@ -10,6 +10,11 @@ title: "Log In"
         {{ $message }}
       </div>
       @end
+      @error('E_VALIDATION_ERROR')
+      <div class="alert alert-danger" role="alert">
+        Could not login. Please check the errors below.
+      </div>
+      @end
       <div class="card">
         <div class="card-header">
           Log In
@@ -33,6 +38,14 @@ title: "Log In"
             type: 'password',
             errorKey: 'errors.password'
             })
+
+
+            <div class="row mb-3">
+              <label class="col-sm-4 col-form-label" for="rememberMe">Remember Me</label>
+              <div class="col-sm-8 d-flex align-content-center">
+                <input class="form-input-check" type="checkbox" name="rememberMe" id="rememberMe">
+              </div>
+            </div>
 
             <div class="d-flex justify-content-end">
               <button type="submit" class="btn btn-primary">Log In</button>
