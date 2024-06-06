@@ -1,5 +1,9 @@
 import Article from '#models/article'
 
+/**
+ * Helper functions for working with Article collections
+ */
+
 export default class ArticlesService {
   static orderByDate(direction: 'asc' | 'desc', articles: Article[]) {
     return articles.sort((a, b) => {

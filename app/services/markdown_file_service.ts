@@ -17,7 +17,7 @@ export type MarkdownData = {
   }
 }
 
-// Figure out how IOC container works so I can create several instances with different configuration
+// Figure out how IOC container works so I can create several instances of a Markdown service with different configuration for storage
 
 export default class MarkdownFileService {
   private static isMarkdown(filename: string) {
@@ -58,7 +58,10 @@ export default class MarkdownFileService {
       const dir = await readdir('public/articles')
       return dir.filter(this.isMarkdown).map(this.extractSlug)
     } catch (error) {
-      throw new Exception(`Failed to get slugs: ${error.message}`, { status: 500 })
+      throw new Exception(`Failed to get slugs: ${error.message}`, {
+        code: 'E_PROCESSING',
+        status: 500,
+      })
     }
   }
 
