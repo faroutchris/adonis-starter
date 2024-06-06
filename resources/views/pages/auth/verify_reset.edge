@@ -1,0 +1,35 @@
+@component('layout/main', {
+title: "Reset your password"
+})
+
+<main class="container mt-5">
+  <div class="row justify-content-center">
+    <div class="col col-md-10 col-lg-7 col-xl-5">
+      <div class="card">
+        <div class="card-header">
+          Forgot password
+        </div>
+        <div class="card-body">
+          <form method="POST" action="{{ route('reset.edit') }}">
+            {{ csrfField() }}
+
+            @!formInput({
+            label: 'New password',
+            name: 'password',
+            id: 'password',
+            type: 'password',
+            errorKey: 'errors.password'
+            })
+
+            <div class="d-flex justify-content-end">
+              <button type="submit" class="btn btn-primary">Update</button>
+            </div>
+        </div>
+        </form>
+      </div>
+    </div>
+  </div>
+  </div>
+</main>
+
+@end

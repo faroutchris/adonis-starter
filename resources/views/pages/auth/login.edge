@@ -5,6 +5,11 @@ title: "Log In"
 <main class="container mt-5">
   <div class="row justify-content-center">
     <div class="col col-md-10 col-lg-7 col-xl-5">
+      @if(flashMessages.has('message'))
+      <div class="alert alert-success" role="alert">
+        {{ flashMessages.get('message') }}
+      </div>
+      @end
       @error('E_INVALID_CREDENTIALS')
       <div class="alert alert-danger" role="alert">
         {{ $message }}
@@ -53,6 +58,7 @@ title: "Log In"
         </div>
         </form>
       </div>
+      <a href="{{ route('reset.show') }}" class="d-flex justify-content-center">I forgot my password</a>
     </div>
   </div>
   </div>

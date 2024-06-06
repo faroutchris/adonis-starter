@@ -22,3 +22,15 @@ export const loginValidator = vine.compile(
     rememberMe: vine.boolean().optional(),
   })
 )
+
+export const passwordResetValidator = vine.compile(
+  vine.object({
+    email: vine.string().email().normalizeEmail(),
+  })
+)
+
+export const passwordResetVerifyValidator = vine.compile(
+  vine.object({
+    password: vine.string().minLength(8),
+  })
+)
