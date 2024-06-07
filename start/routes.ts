@@ -54,8 +54,8 @@ router
   .use(middleware.guest())
 
 router
-  .post('/password/reset/edit', [PasswordResetController, 'edit'])
-  .as('reset.edit')
+  .post('/password/reset/update', [PasswordResetController, 'update'])
+  .as('reset.update')
   .use(middleware.guest())
 
 router

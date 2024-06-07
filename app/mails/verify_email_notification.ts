@@ -16,6 +16,6 @@ export default class VerifyEmailNotification extends BaseMail {
    * the email is sent or queued.
    */
   prepare() {
-    this.message.to(this.user.email).htmlView('emails/verify_email', this.user)
+    this.message.to(this.user.email).htmlView('emails/verify_email', { user: this.user })
   }
 }

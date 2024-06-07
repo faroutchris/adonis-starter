@@ -5,13 +5,18 @@ title: "Reset your password"
 <main class="container mt-5">
   <div class="row justify-content-center">
     <div class="col col-md-10 col-lg-7 col-xl-5">
+
+      @if(isValid)
+
       <div class="card">
         <div class="card-header">
           Forgot password
         </div>
         <div class="card-body">
-          <form method="POST" action="{{ route('reset.edit') }}">
+          <form method="POST" action="{{ route('reset.update') }}">
             {{ csrfField() }}
+
+            <input type="hidden" value="{{ token }}" name="token">
 
             @!formInput({
             label: 'New password',
@@ -24,11 +29,18 @@ title: "Reset your password"
             <div class="d-flex justify-content-end">
               <button type="submit" class="btn btn-primary">Update</button>
             </div>
+          </form>
         </div>
-        </form>
       </div>
+
+      @else
+
+      Your Password reset token has expired
+      <a href="{{ route('auth.login.show') }}">Go to Login</a>
+
+      @end
+
     </div>
-  </div>
   </div>
 </main>
 
