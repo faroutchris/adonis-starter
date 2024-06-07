@@ -1,6 +1,6 @@
 import PasswordResetNotification from '#mails/password_reset_notification'
-import Token from '#models/token'
 import User from '#models/user'
+import PasswordResetService from '#services/password_reset_service'
 import env from '#start/env'
 import { passwordResetValidator, passwordResetVerifyValidator } from '#validators/auth'
 
@@ -23,8 +23,10 @@ export default class PasswordResetController {
     const user = await User.findBy('email', email)
 
     if (user) {
-      const hash = await Token.generatePasswordReset(user)
+      const hash = await PasswordResetService.generate(user)
+
       const link = `http://${env.get('HOST')}:${env.get('PORT')}/password/reset/${hash || ''}` // TODO fix
+
       await mail.send(new PasswordResetNotification({ user, link }))
     }
 
@@ -34,7 +36,7 @@ export default class PasswordResetController {
   async verify({ view, params }: HttpContext) {
     const token: string = params.token
 
-    const isValid = await Token.verify(token)
+    const isValid = await PasswordResetService.verify(token)
 
     return view.render('pages/auth/verify_reset', { isValid, token })
   }
@@ -42,8 +44,8 @@ export default class PasswordResetController {
   async update({ request, response, session, auth }: HttpContext) {
     const { password, token } = await request.validateUsing(passwordResetVerifyValidator)
 
-    const user = await Token.getPasswordResetUser(token)
-    console.log(user)
+    const user = await PasswordResetService.getUser(token)
+
     if (!user) {
       session.flash('error', 'Token has expired or the associated user could not be found')
       return response.redirect().back()
