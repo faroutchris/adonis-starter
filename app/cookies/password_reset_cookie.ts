@@ -3,9 +3,8 @@ import { HttpContext } from '@adonisjs/core/http'
 import { CookieOptions } from '@adonisjs/core/types/http'
 
 @inject()
-export default class PasswordResetTokenCookie {
+export default class PasswordResetCookie {
   name: string = 'password_reset_token'
-
   options: Partial<CookieOptions> = {
     domain: '',
     path: '/',
