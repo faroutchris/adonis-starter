@@ -16,8 +16,6 @@ title: "Reset your password"
           <form method="POST" action="{{ route('reset.update') }}">
             {{ csrfField() }}
 
-            <input type="hidden" value="{{ token }}" name="token">
-
             @!formInput({
             label: 'New password',
             name: 'password',

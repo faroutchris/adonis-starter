@@ -3,9 +3,10 @@ import User from '#models/user'
 import PasswordResetService from '#services/password_reset_service'
 import env from '#start/env'
 import { passwordResetValidator, passwordResetVerifyValidator } from '#validators/auth'
-
 import type { HttpContext } from '@adonisjs/core/http'
 import mail from '@adonisjs/mail/services/main'
+import PasswordResetTokenCookie from '../../cookies/password_reset_token.js'
+import { inject } from '@adonisjs/core'
 
 export default class PasswordResetController {
   async show({ view }: HttpContext) {
@@ -33,18 +34,29 @@ export default class PasswordResetController {
     return response.redirect().toRoute('auth.login.show')
   }
 
-  async verify({ view, params }: HttpContext) {
+  @inject()
+  async verify({ view, params }: HttpContext, cookie: PasswordResetTokenCookie) {
     const token: string = params.token
 
     const isValid = await PasswordResetService.verify(token)
 
-    return view.render('pages/auth/verify_reset', { isValid, token })
+    if (isValid) {
+      cookie.set(token)
+    }
+
+    return view.render('pages/auth/verify_reset', { isValid })
   }
 
-  async update({ request, response, session, auth }: HttpContext) {
-    const { password, token } = await request.validateUsing(passwordResetVerifyValidator)
+  @inject()
+  async update(
+    { request, response, session, auth }: HttpContext,
+    cookie: PasswordResetTokenCookie
+  ) {
+    const { password } = await request.validateUsing(passwordResetVerifyValidator)
 
-    const user = await PasswordResetService.getUser(token)
+    const user = await PasswordResetService.getUser(cookie.read())
+
+    cookie.clear()
 
     if (!user) {
       session.flash('error', 'Token has expired or the associated user could not be found')
