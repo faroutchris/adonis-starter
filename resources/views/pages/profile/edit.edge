@@ -1,0 +1,33 @@
+@component('layout/main', { title: "Edit my profile" })
+<div class="bg-dark-subtle text-bg-dark-subtle">
+  <div class="container py-5">
+    <h2>My profile</h2>
+  </div>
+</div>
+<main class="container mt-5">
+  @if(flashMessages.has('success'))
+  <div class="alert alert-success" role="alert">
+    {{ flashMessages.get('success') }}
+  </div>
+  @end
+  <div class="col-6">
+    Name: {{name}}<br />
+    Email: {{email}}
+  </div>
+  <form action="{{route('profiles.update')}}" enctype="multipart/form-data" method="POST" class="col-6">
+    {{ csrfField() }}
+
+    @!formInput({
+    type: "textarea",
+    value: bio,
+    label: 'Bio',
+    name: 'bio',
+    id: 'bio',
+    errorKey: 'errors.bio',
+    })
+    <div class="d-flex justify-content-end">
+      <button type="submit" class="btn btn-primary">Update</button>
+    </div>
+  </form>
+</main>
+@end

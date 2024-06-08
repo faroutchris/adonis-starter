@@ -1,7 +1,7 @@
 @let(value = $props.value || old(name) || '')
 
 @let(formAttributes = {
-value: value , type: type || '' , id: id || '' , name: name || ''
+value: value , type: type || '' , id: id || '' , name: name || '',
 })
 
 @let(formClasses = [
@@ -14,7 +14,11 @@ value: value , type: type || '' , id: id || '' , name: name || ''
     {{ $props.label }}
   </label>
   <div class="col-sm-8">
-    <input {{ html.attrs({ ...formAttributes , class: formClasses }) }}>
+    @if (type === "textarea")
+    <textarea {{ html.attrs({id: id || '' , name: name || '' , class: formClasses }) }} rows="5">{{value}}</textarea>
+    @else
+    <input {{ html.attrs({ ...formAttributes, class: formClasses }) }}>
+    @end
     @if (flashMessages.has($props.errorKey))
     <div class="invalid-feedback">
       {{ flashMessages.get($props.errorKey) }}

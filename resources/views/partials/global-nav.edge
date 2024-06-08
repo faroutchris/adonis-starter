@@ -1,4 +1,4 @@
-<nav class="navbar navbar-expand-lg bg-body-secondary">
+<nav class="navbar navbar-expand-lg bg-body-secondary ">
   <div class="container">
     <a class="navbar-brand" href="#">
       Red Digital
@@ -30,7 +30,7 @@
             {{ auth.user.name }}
           </a>
           <ul class="dropdown-menu">
-            <li><a class="dropdown-item" href="#">Some action</a></li>
+            <li><a class="dropdown-item" href={{ route('profiles.edit') }}>Edit Profile</a></li>
             <li>
               <form method="POST" action="{{ route('auth.logout') }}">
                 {{ csrfField() }}
