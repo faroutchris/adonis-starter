@@ -1,30 +1,20 @@
-import VerifyEmailNotification from '#mails/verify_email_notification'
-
-import User from '#models/user'
-import ProfileService from '#services/profile_service'
+import AuthService from '#services/auth_service'
 import { registerValidator } from '#validators/auth'
 import { inject } from '@adonisjs/core'
 import type { HttpContext } from '@adonisjs/core/http'
-import mail from '@adonisjs/mail/services/main'
 
 @inject()
 export default class RegisterController {
-  constructor(protected profileService: ProfileService) {}
+  constructor(protected authService: AuthService) {}
 
   async show({ view }: HttpContext) {
     return view.render('pages/auth/register')
   }
 
-  async store({ request, response, auth }: HttpContext) {
+  async store({ request, response }: HttpContext) {
     const form = await request.validateUsing(registerValidator)
-    // Create user and associate them to a profile
-    const user = await User.create(form)
-    await this.profileService.create(user)
 
-    // Login
-    await auth.use('web').login(user)
-    // Send out notification to the user
-    await mail.send(new VerifyEmailNotification(user))
+    this.authService.register(form)
 
     return response.redirect().toRoute('home')
   }

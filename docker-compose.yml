@@ -21,6 +21,12 @@ services:
       db:
         condition: service_healthy
 
+  mailcrab:
+    image: marlonb/mailcrab:latest
+    ports:
+      - '1080:1080'
+      - '1025:1025'
+    networks: [default]
 
   db:
     image: postgres

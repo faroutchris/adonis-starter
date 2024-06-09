@@ -14,7 +14,7 @@
     Name: {{name}}<br />
     Email: {{email}}
   </div>
-  <form action="{{route('profiles.update')}}" enctype="multipart/form-data" method="POST" class="col-6">
+  <form action="{{route('profiles.update')}}" method="POST" class="col-6">
     {{ csrfField() }}
 
     @!formInput({
