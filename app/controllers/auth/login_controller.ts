@@ -14,7 +14,7 @@ export default class LoginController {
   async store({ request, response }: HttpContext) {
     const form = await request.validateUsing(loginValidator)
 
-    this.authService.login(form)
+    await this.authService.login(form)
 
     return response.redirect().toRoute('home')
   }

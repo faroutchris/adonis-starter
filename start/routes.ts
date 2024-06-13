@@ -9,6 +9,7 @@
 
 import router from '@adonisjs/core/services/router'
 import { middleware } from './kernel.js'
+const TeamsController = () => import('#controllers/teams_controller')
 const ProfilesController = () => import('#controllers/profiles_controller')
 const PasswordResetController = () => import('#controllers/auth/password_reset_controller')
 const LoginController = () => import('#controllers/auth/login_controller')
@@ -120,3 +121,21 @@ router
   .post('/profiles/edit', [ProfilesController, 'update'])
   .as('profiles.update')
   .use(middleware.auth())
+
+/*
+|--------------------------------------------------------------------------
+| Teams
+|--------------------------------------------------------------------------
+|
+| Team management
+|
+*/
+
+router
+  .get('/teams', [TeamsController, 'index'])
+  .as('teams.index')
+  .use([middleware.auth(), middleware.team()])
+router
+  .get('/teams/:slug', [TeamsController, 'show'])
+  .as('teams.show')
+  .use([middleware.auth(), middleware.team()])

@@ -1,12 +1,13 @@
 import { DateTime } from 'luxon'
 import hash from '@adonisjs/core/services/hash'
 import { compose } from '@adonisjs/core/helpers'
-import { BaseModel, column, hasMany, hasOne } from '@adonisjs/lucid/orm'
+import { BaseModel, column, hasMany, hasOne, manyToMany } from '@adonisjs/lucid/orm'
 import { withAuthFinder } from '@adonisjs/auth/mixins/lucid'
 import { DbRememberMeTokensProvider } from '@adonisjs/auth/session'
 import Token from './token.js'
-import type { HasMany, HasOne } from '@adonisjs/lucid/types/relations'
+import type { HasMany, HasOne, ManyToMany } from '@adonisjs/lucid/types/relations'
 import Profile from './profile.js'
+import Team from './team.js'
 
 const AuthFinder = withAuthFinder(() => hash.use('scrypt'), {
   uids: ['email'],
@@ -45,6 +46,9 @@ export default class User extends compose(BaseModel, AuthFinder) {
 
   @hasOne(() => Profile)
   declare profile: HasOne<typeof Profile>
+
+  @manyToMany(() => Team)
+  declare teams: ManyToMany<typeof Team>
 
   static rememberMeTokens = DbRememberMeTokensProvider.forModel(User)
 }
