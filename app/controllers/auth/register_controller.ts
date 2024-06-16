@@ -14,7 +14,7 @@ export default class RegisterController {
   async store({ request, response }: HttpContext) {
     const form = await request.validateUsing(registerValidator)
 
-    this.authService.register(form)
+    await this.authService.register(form)
 
     return response.redirect().toRoute('home')
   }

@@ -8,7 +8,7 @@ export default class PasswordResetCookie {
   options: Partial<CookieOptions> = {
     domain: '',
     path: '/',
-    // We expire the tokens in our db
+    // Tokens get expired earlier in the db, still using maxAge for safety
     maxAge: '2h',
     httpOnly: true,
     secure: true,

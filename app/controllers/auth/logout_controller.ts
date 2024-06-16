@@ -7,7 +7,7 @@ export default class LogoutController {
   constructor(protected authService: AuthService) {}
 
   async handle({ response }: HttpContext) {
-    this.authService.logout()
+    await this.authService.logout()
 
     response.redirect().toRoute('home')
   }

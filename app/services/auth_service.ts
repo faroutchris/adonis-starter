@@ -32,6 +32,6 @@ export default class AuthService {
     // Login
     await auth.use('web').login(user)
     // Send out notification to the user
-    await mail.send(new VerifyEmailNotification(user)) // TODO notification service, dont depend on concrete class
+    await mail.send(new VerifyEmailNotification(user))
   }
 }

@@ -1,11 +1,11 @@
-import { DateTime } from 'luxon'
-import hash from '@adonisjs/core/services/hash'
-import { compose } from '@adonisjs/core/helpers'
-import { BaseModel, column, hasMany, hasOne } from '@adonisjs/lucid/orm'
 import { withAuthFinder } from '@adonisjs/auth/mixins/lucid'
 import { DbRememberMeTokensProvider } from '@adonisjs/auth/session'
-import Token from './token.js'
+import { compose } from '@adonisjs/core/helpers'
+import hash from '@adonisjs/core/services/hash'
+import { BaseModel, column, hasMany, hasOne } from '@adonisjs/lucid/orm'
 import type { HasMany, HasOne } from '@adonisjs/lucid/types/relations'
+import { DateTime } from 'luxon'
+import Token from './token.js'
 import Profile from './profile.js'
 
 const AuthFinder = withAuthFinder(() => hash.use('scrypt'), {
