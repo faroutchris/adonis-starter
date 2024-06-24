@@ -1,0 +1,19 @@
+@if($props.articles.length)
+<ul class="list-group mb-4">
+  @each((article, index) in articles)
+  <li class="list-group-item">
+    <a href="{{ route('articles.show', { slug: article.slug }) }}">
+      {{ article.title }}
+    </a>
+    <p>{{ article.description }}</p>
+  </li>
+  @end
+</ul>
+@else
+<div class="card mb-4">
+  <div class="card-body text-center">
+    <p class="card-text"> Nothing here.</p>
+    <a class="btn btn-primary card-link" href="{{ route('articles.index') }}">Clear filters</a>
+  </div>
+</div>
+@end
