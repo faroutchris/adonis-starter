@@ -1,0 +1,69 @@
+@component('layout/main', { title: "Todos" })
+<main class="container mt-5">
+  <h1>Task Manager</h1>
+
+  <form class="row row-cols g-3 align-items-start mt-5" method="POST" action="{{ route('todos.save') }}">
+    {{ csrfField() }}
+    <div class="col-4">
+      <label class="visually-hidden" for="title">Todo</label>
+      <input type="text" {{html.attrs({ class: [ 'form-control' , { "is-invalid" : flashMessages.has("errors.title") } ]
+        })}} class="form-control" id="title" name="title" placeholder="My todo">
+      @inputError('title')
+      @each(message in $messages)
+      <div class="invalid-feedback">{{ message }}</div>
+      @end
+      @end
+    </div>
+    <div class="col-auto">
+      <button type="submit" class="btn btn-primary">Save it!</button>
+    </div>
+  </form>
+
+  <div class="row">
+    <div class="col-5">
+      <ul class="list-group mt-5">
+        @each(todo in todos)
+        <li class="list-group-item d-flex align-items-center">
+          <form method="POST" action="{{ route('todos.update', {id: todo.id} ) }}?_method=PUT" class="flex-grow-1"
+            data-controller="onchangeform">
+            {{ csrfField() }}
+            <label>
+              <input class="form-check-input me-2" type="checkbox" name="done" {{ html.attrs({ checked: todo.done })}}
+                data-action="change->onchangeform#submit">
+              {{todo.title}}
+            </label>
+          </form>
+          <form method="POST" action="{{ route('todos.delete', {id: todo.id} ) }}?_method=DELETE">
+            {{ csrfField() }}
+            <button class="btn btn-sm btn-secondary" type="submit">
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-x0"
+                viewBox="0 0 16 16">
+                <path
+                  d="M4.646 4.646a.5.5 0 0 1 .708 0L8 7.293l2.646-2.647a.5.5 0 0 1 .708.708L8.707 8l2.647 2.646a.5.5 0 0 1-.708.708L8 8.707l-2.646 2.647a.5.5 0 0 1-.708-.708L7.293 8 4.646 5.354a.5.5 0 0 1 0-.708" />
+              </svg>
+            </button>
+          </form>
+        </li>
+        @end
+      </ul>
+    </div>
+  </div>
+</main>
+@if(flashMessages.has('success'))
+<div class="toast-container position-fixed top-0 end-0 m-4" aria-live="polite" aria-atomic="true"
+  data-controller="alert">
+  <div class="toast show bg-success-subtle border-0" role="alert" aria-live="assertive" aria-atomic="true">
+    <div class="toast-header bg-success-subtle border-0">
+      <strong class="me-auto">Success</strong>
+      <button type="button" class="btn-close ms-2" data-bs-dismiss="toast" aria-label="Close">
+        <span aria-hidden="true"></span>
+      </button>
+    </div>
+    <div class="toast-body">
+      {{ flashMessages.get('success') }}
+    </div>
+  </div>
+</div>
+@end
+
+@end

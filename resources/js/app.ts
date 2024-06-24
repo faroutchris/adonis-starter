@@ -3,6 +3,7 @@ import 'bootstrap'
 import '@hotwired/turbo'
 import { Application } from '@hotwired/stimulus'
 import OnChangeFormController from './controllers/on_change_form.js'
+import AlertController from './controllers/notification.js'
 
 declare global {
   interface Window {
@@ -12,3 +13,4 @@ declare global {
 
 window.Stimulus = Application.start()
 window.Stimulus.register('onchangeform', OnChangeFormController)
+window.Stimulus.register('alert', AlertController)
