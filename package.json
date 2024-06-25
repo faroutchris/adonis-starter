@@ -41,6 +41,7 @@
     "@japa/plugin-adonisjs": "^3.0.1",
     "@japa/runner": "^3.1.4",
     "@swc/core": "^1.4.16",
+    "@types/bootstrap": "^5.2.10",
     "@types/luxon": "^3.4.2",
     "@types/node": "^20.12.7",
     "eslint": "^8.57.0",

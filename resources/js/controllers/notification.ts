@@ -1,9 +1,9 @@
 import { Controller } from '@hotwired/stimulus'
 
-export default class AlertController extends Controller {
+export default class NotificationController extends Controller {
   connect() {
-    window.setTimeout(() => {
+    setTimeout(() => {
       this.element.remove()
-    }, 5000)
+    }, 4000)
   }
 }

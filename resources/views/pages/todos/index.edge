@@ -1,6 +1,8 @@
 @component('layout/main', { title: "Todos" })
 <main class="container mt-5">
-  <h1>Task Manager</h1>
+  <h1>
+    Task Manager
+  </h1>
 
   <form class="row row-cols g-3 align-items-start mt-5" method="POST" action="{{ route('todos.save') }}">
     {{ csrfField() }}
@@ -23,14 +25,14 @@
     <div class="col-5">
       <ul class="list-group mt-5">
         @each(todo in todos)
-        <li class="list-group-item d-flex align-items-center">
+        <li class="list-group-item d-flex align-items-start">
           <form method="POST" action="{{ route('todos.update', {id: todo.id} ) }}?_method=PUT" class="flex-grow-1"
             data-controller="onchangeform">
             {{ csrfField() }}
-            <label>
+            <label class="d-flex ">
               <input class="form-check-input me-2" type="checkbox" name="done" {{ html.attrs({ checked: todo.done })}}
                 data-action="change->onchangeform#submit">
-              {{todo.title}}
+              <p {{ html.attrs({class: [{'text-muted': todo.done}]}) }}>{{todo.title}}</p>
             </label>
           </form>
           <form method="POST" action="{{ route('todos.delete', {id: todo.id} ) }}?_method=DELETE">
@@ -49,9 +51,10 @@
     </div>
   </div>
 </main>
+
 @if(flashMessages.has('success'))
 <div class="toast-container position-fixed top-0 end-0 m-4" aria-live="polite" aria-atomic="true"
-  data-controller="alert">
+  data-controller="notification">
   <div class="toast show bg-success-subtle border-0" role="alert" aria-live="assertive" aria-atomic="true">
     <div class="toast-header bg-success-subtle border-0">
       <strong class="me-auto">Success</strong>
@@ -65,5 +68,4 @@
   </div>
 </div>
 @end
-
 @end

@@ -12,9 +12,9 @@ export default class TodosController {
   async save({ request, response, session }: HttpContext) {
     const { title } = await request.validateUsing(saveTaskValidator)
 
-    session.flash('success', 'Added a new todo')
+    const todo = await Todo.create({ title })
 
-    await Todo.create({ title })
+    session.flash('success', `Added a new todo ${todo.id}`)
 
     return response.redirect().back()
   }
