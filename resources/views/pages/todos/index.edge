@@ -1,8 +1,6 @@
 @component('layout/main', { title: "Todos" })
 <main class="container mt-5">
-  <h1>
-    Task Manager
-  </h1>
+  <h1>Task Manager</h1>
 
   <form class="row row-cols g-3 align-items-start mt-5" method="POST" action="{{ route('todos.save') }}">
     {{ csrfField() }}
@@ -23,7 +21,7 @@
 
   <div class="row">
     <div class="col-5">
-      <ul class="list-group mt-5">
+      <ul class="list-group mt-5" id="task-list">
         @each(todo in todos)
         <li class="list-group-item d-flex align-items-start">
           <form method="POST" action="{{ route('todos.update', {id: todo.id} ) }}?_method=PUT" class="flex-grow-1"
@@ -52,9 +50,9 @@
   </div>
 </main>
 
-@if(flashMessages.has('success'))
 <div class="toast-container position-fixed top-0 end-0 m-4" aria-live="polite" aria-atomic="true"
-  data-controller="notification">
+  id="toast-notification">
+  @if(flashMessages.has('success'))
   <div class="toast show bg-success-subtle border-0" role="alert" aria-live="assertive" aria-atomic="true">
     <div class="toast-header bg-success-subtle border-0">
       <strong class="me-auto">Success</strong>
@@ -66,6 +64,6 @@
       {{ flashMessages.get('success') }}
     </div>
   </div>
+  @end
 </div>
-@end
 @end

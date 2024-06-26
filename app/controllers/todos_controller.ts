@@ -1,6 +1,8 @@
 import Todo from '#models/todo'
 import { saveTaskValidator, updateTaskValidator } from '#validators/todo'
 import type { HttpContext } from '@adonisjs/core/http'
+import TurboStream from '../../extensions/turbo/turbo_stream.js'
+import { inject } from '@adonisjs/core'
 
 export default class TodosController {
   async index({ view }: HttpContext) {
@@ -9,12 +11,29 @@ export default class TodosController {
     return view.render('pages/todos/index', { todos })
   }
 
-  async save({ request, response, session }: HttpContext) {
+  @inject()
+  async save({ request, response, session }: HttpContext, turboStream: TurboStream) {
     const { title } = await request.validateUsing(saveTaskValidator)
 
     const todo = await Todo.create({ title })
+    const notification = `Added a new todo ${todo.id}`
 
-    session.flash('success', `Added a new todo ${todo.id}`)
+    if (turboStream.isTurboStream()) {
+      const taskTemplate = turboStream.from(
+        'pages/todos/create_task',
+        { todo },
+        { action: 'prepend', target: 'task-list' }
+      )
+      const messageTemplate = turboStream.from(
+        'pages/todos/success_notification',
+        { notification },
+        { action: 'update', target: 'toast-notification' }
+      )
+
+      return turboStream.renderAll([taskTemplate, messageTemplate])
+    }
+
+    session.flash('success', notification)
 
     return response.redirect().back()
   }
