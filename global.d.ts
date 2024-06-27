@@ -7,3 +7,5 @@ type ClassProperties<C extends Newable> = {
 type KeyOfType<Type, ValueType> = keyof {
   [Key in keyof Type as Type[Key] extends ValueType ? Key : never]: any
 }
+
+declare module '@hotwired/turbo'

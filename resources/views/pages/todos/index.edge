@@ -2,12 +2,13 @@
 <main class="container mt-5">
   <h1>Task Manager</h1>
 
-  <form class="row row-cols g-3 align-items-start mt-5" method="POST" action="{{ route('todos.save') }}">
+  <form class="row row-cols g-3 align-items-start mt-5" method="POST" action="{{ route('todos.save') }}"
+    data-controller="clear-form">
     {{ csrfField() }}
     <div class="col-4">
       <label class="visually-hidden" for="title">Todo</label>
       <input type="text" {{html.attrs({ class: [ 'form-control' , { "is-invalid" : flashMessages.has("errors.title") } ]
-        })}} class="form-control" id="title" name="title" placeholder="My todo">
+        })}} class="form-control" id="title" name="title" placeholder="My todo" data-clear-form-target="focus">
       @inputError('title')
       @each(message in $messages)
       <div class="invalid-feedback">{{ message }}</div>
