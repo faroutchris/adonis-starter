@@ -17,7 +17,7 @@ export default class TodosController {
 
     if (turboStream.isTurboStream()) {
       const taskTemplate = turboStream.from(
-        'pages/todos/create_task',
+        'pages/todos/task',
         { todo },
         { action: 'prepend', target: 'task-list' }
       )
