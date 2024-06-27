@@ -1,8 +1,6 @@
 import Todo from '#models/todo'
 import { saveTaskValidator, updateTaskValidator } from '#validators/todo'
 import type { HttpContext } from '@adonisjs/core/http'
-import TurboStream from '../../extensions/turbo/turbo_stream.js'
-import { inject } from '@adonisjs/core'
 
 export default class TodosController {
   async index({ view }: HttpContext) {
@@ -11,8 +9,7 @@ export default class TodosController {
     return view.render('pages/todos/index', { todos })
   }
 
-  @inject()
-  async save({ request, response, session }: HttpContext, turboStream: TurboStream) {
+  async save({ request, response, session, turboStream }: HttpContext) {
     const { title } = await request.validateUsing(saveTaskValidator)
 
     const todo = await Todo.create({ title })

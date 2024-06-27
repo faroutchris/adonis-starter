@@ -22,6 +22,7 @@
     "#services/*": "./app/services/*.js",
     "#listeners/*": "./app/listeners/*.js",
     "#events/*": "./app/events/*.js",
+    "#extensions/*": "./extensions/*.js",
     "#middleware/*": "./app/middleware/*.js",
     "#validators/*": "./app/validators/*.js",
     "#providers/*": "./providers/*.js",
