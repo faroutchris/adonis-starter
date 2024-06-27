@@ -1,4 +1,5 @@
 import { Controller } from '@hotwired/stimulus'
+import { TurboEvents } from '../event_listeners.js'
 
 export default class ClearFormController extends Controller<HTMLFormElement> {
   static targets = ['focus']
@@ -10,15 +11,14 @@ export default class ClearFormController extends Controller<HTMLFormElement> {
   #afterSubmit = this.afterSubmit.bind(this)
 
   connect(): void {
-    document.addEventListener('turbo:submit-end', this.#afterSubmit)
+    document.addEventListener(TurboEvents.SubmitEnd, this.#afterSubmit)
   }
 
   disconnect(): void {
-    document.removeEventListener('turbo:submit-end', this.#afterSubmit)
+    document.removeEventListener(TurboEvents.SubmitEnd, this.#afterSubmit)
   }
 
   afterSubmit() {
     this.element.reset()
-    this.focusTarget.focus()
   }
 }

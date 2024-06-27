@@ -7,8 +7,9 @@
     {{ csrfField() }}
     <div class="col-4">
       <label class="visually-hidden" for="title">Todo</label>
-      <input type="text" {{html.attrs({ class: [ 'form-control' , { "is-invalid" : flashMessages.has("errors.title") } ]
-        })}} class="form-control" id="title" name="title" placeholder="My todo" data-clear-form-target="focus">
+      <input type="text" autocomplete="off" {{html.attrs({ class: [ 'form-control' , { "is-invalid" :
+        flashMessages.has("errors.title") } ] })}} id="title" name="title" placeholder="My todo"
+        data-clear-form-target="focus">
       @inputError('title')
       @each(message in $messages)
       <div class="invalid-feedback">{{ message }}</div>
