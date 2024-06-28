@@ -13,7 +13,7 @@ import { HttpContext } from '@adonisjs/core/http'
  *          The HTML template used to render each message in a list of such on the first page load is the same template that’ll be used
  *          to add one new message to the list dynamically later. This is at the essence of the HTML-over-the-wire approach"
  *    This means that the partials should not have any directives. We add them when we respond with a turbostream template
- * [] Add a provider for TurboStream if we need config - for example asset versioning
+ * [] Add a provider for TurboStream if we need config - for example asset versioning, paths to layouts
  * [] Add a pattern matching functionality of some type to ctx: switch (request.format) case html -> .. case turbo ->
  * [] Populate turbo data/state with flashMessages
  * [x] Figure out a better way to render multiple templates for streams (turbo drive should only render one template btw)
@@ -29,7 +29,7 @@ import { HttpContext } from '@adonisjs/core/http'
  * [] Turbo Frames
  *    [] Render a minimal layout (<head /> + <turbo /> tags) when a turbo frame request is detected (request.headers["Turbo-Frame"])
  *       https://github.com/hotwired/turbo-rails/blob/main/app/controllers/turbo/frames/frame_request.rb
- *
+ * [] Expose TurboFrame & TurboStream classes to DI system (ie construct in provider)
  */
 
 type TurboDirectives = {
@@ -74,8 +74,10 @@ export default class TurboStream {
     /* Upgrade response */
     this.setHeader()
 
+    /* Render the partial */
     const body = await this.ctx.view.render(path, state)
 
+    /* Inject partial and directives into the turbo stream component */
     return this.ctx.view.render('turbo_stream', { body, directives })
   }
 

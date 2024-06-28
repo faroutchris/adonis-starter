@@ -135,3 +135,4 @@ router.get('/todos', [TodosController, 'index']).as('todos.index').use(middlewar
 router.post('/todos', [TodosController, 'save']).as('todos.save').use(middleware.auth())
 router.put('/todos/:id', [TodosController, 'update']).as('todos.update').use(middleware.auth())
 router.delete('/todos/:id', [TodosController, 'delete']).as('todos.delete').use(middleware.auth())
+router.get('/todos/priority', [TodosController, 'priority']).as('todos.priority')

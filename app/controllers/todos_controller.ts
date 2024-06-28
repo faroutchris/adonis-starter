@@ -3,10 +3,10 @@ import { saveTaskValidator, updateTaskValidator } from '#validators/todo'
 import type { HttpContext } from '@adonisjs/core/http'
 
 export default class TodosController {
-  async index({ view }: HttpContext) {
+  async index({ turboFrame }: HttpContext) {
     const todos = await Todo.all()
 
-    return view.render('pages/todos/index', { todos })
+    return turboFrame.render('pages/todos/index', { todos })
   }
 
   async save({ request, response, session, turboStream }: HttpContext) {
@@ -53,5 +53,22 @@ export default class TodosController {
     todo.delete()
 
     return response.redirect().back()
+  }
+
+  async priority({ view, request }: HttpContext) {
+    const qs = request.qs() as { show: string }
+
+    const show = qs.show === 'true'
+    const newQs = `?show=${!show}`
+
+    console.log(newQs)
+    return view.renderRaw(`
+      <turbo-frame id="messages">
+        <a href="{{ route('todos.priority') }}${newQs}">
+          ${show ? 'Hide' : 'Show'} priorities
+        </a>
+    ${show ? 'hello' : ''}
+      </turbo-frame>
+    `)
   }
 }
