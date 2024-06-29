@@ -1,38 +1,25 @@
 import Todo from '#models/todo'
 import { saveTaskValidator, updateTaskValidator } from '#validators/todo'
-import type { HttpContext } from '@adonisjs/core/http'
+import { TodoIndexRender } from '#views/todos_index_render'
+import type { HttpContext, Request } from '@adonisjs/core/http'
 
 export default class TodosController {
-  async index({ turboFrame }: HttpContext) {
+  async index({ turboFrame, request }: HttpContext) {
     const todos = await Todo.all()
 
-    return turboFrame.render('pages/todos/index', { todos })
+    const showPriority = !this.getPriority(request)
+
+    return turboFrame.render('pages/todos/index', { todos, showPriority })
   }
 
-  async save({ request, response, session, turboStream }: HttpContext) {
+  async save(ctx: HttpContext) {
+    const { request, turboStream } = ctx
     const { title } = await request.validateUsing(saveTaskValidator)
 
     const todo = await Todo.create({ title })
     const notification = `Added a new todo ${todo.id}`
 
-    if (turboStream.isTurboStream()) {
-      const taskTemplate = turboStream.from(
-        'pages/todos/task',
-        { todo },
-        { action: 'prepend', target: 'task-list' }
-      )
-      const messageTemplate = turboStream.from(
-        'pages/todos/success_notification',
-        { notification },
-        { action: 'update', target: 'toast-notification' }
-      )
-
-      return turboStream.renderAll([taskTemplate, messageTemplate])
-    }
-
-    session.flash('success', notification)
-
-    return response.redirect().back()
+    return turboStream.renderUsing(new TodoIndexRender(ctx, { todo, notification }))
   }
 
   async update({ params, request, response }: HttpContext) {
@@ -55,20 +42,10 @@ export default class TodosController {
     return response.redirect().back()
   }
 
-  async priority({ view, request }: HttpContext) {
+  // Could be on a service
+  private getPriority(request: Request) {
     const qs = request.qs() as { show: string }
 
-    const show = qs.show === 'true'
-    const newQs = `?show=${!show}`
-
-    console.log(newQs)
-    return view.renderRaw(`
-      <turbo-frame id="messages">
-        <a href="{{ route('todos.priority') }}${newQs}">
-          ${show ? 'Hide' : 'Show'} priorities
-        </a>
-    ${show ? 'hello' : ''}
-      </turbo-frame>
-    `)
+    return qs.show === undefined || qs.show === 'true'
   }
 }

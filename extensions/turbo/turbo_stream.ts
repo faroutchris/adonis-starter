@@ -14,7 +14,8 @@ import { HttpContext } from '@adonisjs/core/http'
  *          to add one new message to the list dynamically later. This is at the essence of the HTML-over-the-wire approach"
  *    This means that the partials should not have any directives. We add them when we respond with a turbostream template
  * [] Add a provider for TurboStream if we need config - for example asset versioning, paths to layouts
- * [] Add a pattern matching functionality of some type to ctx: switch (request.format) case html -> .. case turbo ->
+ * [x] Add a pattern matching functionality of some type to ctx: switch (request.format) case html -> .. case turbo ->
+ *    - Solved with class based approach ( new Renderer extends BaseTurboStreamRenderer {} )
  * [] Populate turbo data/state with flashMessages
  * [x] Figure out a better way to render multiple templates for streams (turbo drive should only render one template btw)
  * [] Add support for all directives on TurboStream and TurboDrive
@@ -32,12 +33,16 @@ import { HttpContext } from '@adonisjs/core/http'
  * [] Expose TurboFrame & TurboStream classes to DI system (ie construct in provider)
  */
 
+// API?
+// return turbo.stream.append()
+// return turbo.render()
+
 type TurboDirectives = {
   target?: string
   action?: string
 }
 
-class TurboTemplate {
+export class TurboTemplate {
   directives?: TurboDirectives
   path?: string
   state?: Record<string, any>
@@ -47,6 +52,14 @@ class TurboTemplate {
     this.state = state
     this.directives = directives
   }
+}
+
+export abstract class BaseTurboStreamRenderer {
+  constructor(protected ctx: HttpContext) {}
+
+  stream(): TurboTemplate | TurboTemplate[] | void {}
+
+  html(): Promise<string> | void {}
 }
 
 export default class TurboStream {
@@ -66,13 +79,36 @@ export default class TurboStream {
     return new TurboTemplate(path, state, directives)
   }
 
-  async render(template: TurboTemplate) {
+  async renderUsing(renderer: BaseTurboStreamRenderer) {
+    /* Upgrade response */
+    this.setHeader()
+
+    if (this.isTurboStream()) {
+      const stream = renderer.stream()
+
+      if (stream === undefined) return
+
+      return this.render(stream)
+    } else {
+      return renderer.html()
+    }
+  }
+
+  async render(input: TurboTemplate | TurboTemplate[]) {
+    /* Upgrade response */
+    this.setHeader()
+
+    if (input === undefined) return
+
+    if (Array.isArray(input)) return this.renderAll(input)
+
+    return this.renderOne(input)
+  }
+
+  async renderOne(template: TurboTemplate) {
     const { directives, path, state } = template
 
     if (!path) throw new Exception('No template found')
-
-    /* Upgrade response */
-    this.setHeader()
 
     /* Render the partial */
     const body = await this.ctx.view.render(path, state)
@@ -83,7 +119,7 @@ export default class TurboStream {
 
   async renderAll(templates: TurboTemplate[]) {
     const renderedStreams = await Promise.all(
-      templates.map(async (template) => await this.render(template))
+      templates.map(async (template) => await this.renderOne(template))
     )
 
     return this.ctx.view.renderRaw(renderedStreams.join(''))

@@ -1,7 +1,11 @@
 import { HttpContext } from '@adonisjs/core/http'
+import * as HTMLParser from 'node-html-parser'
 
 export default class TurboFrame {
-  constructor(protected ctx: HttpContext) {}
+  constructor(
+    protected ctx: HttpContext,
+    protected parse: typeof HTMLParser.parse
+  ) {}
 
   isTurboFrame() {
     return !!this.ctx.request.header('Turbo-Frame')
@@ -11,11 +15,16 @@ export default class TurboFrame {
     return this.ctx.request.header('Turbo-Frame')
   }
 
-  render(templatePath: string, state?: Record<string, any>): Promise<string> {
-    if (this.isTurboFrame()) {
-      const frame = this.getTurboFrame()
-      console.log('frame', frame)
-      // Do something here to parse out only the matching <turbo-frame>
+  async render(templatePath: string, state?: Record<string, any>): Promise<string> {
+    const frameId = this.getTurboFrame()
+    if (frameId) {
+      const template = await this.ctx.view.render(templatePath, state)
+
+      const frame = this.parse(template).getElementById(frameId)
+
+      if (frame) {
+        return this.ctx.view.renderRaw(frame?.toString())
+      }
     }
 
     return this.ctx.view.render(templatePath, state)
