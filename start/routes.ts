@@ -127,7 +127,7 @@ router
 | Todo App
 |--------------------------------------------------------------------------
 |
-| Test out hotwire and stimulus to create SPA-like app
+| Test out hotwire turbo and stimulus to create SPA-like app
 |
 */
 

@@ -8,7 +8,7 @@
       <p {{ html.attrs({class: [{'text-muted': todo.done}]}) }}>{{todo.title}}</p>
     </label>
   </form>
-  <form method="POST" action="{{ route('todos.delete', {id: todo.id} ) }}?_method=DELETE" data-turbo-frame="_top">
+  <form method="POST" action="{{ route('todos.delete', {id: todo.id} ) }}?_method=DELETE">
     {{ csrfField() }}
     <button class="btn btn-sm btn-secondary" type="submit">
       <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-x0"

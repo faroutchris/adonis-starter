@@ -40,6 +40,8 @@ import { HttpContext } from '@adonisjs/core/http'
 type TurboDirectives = {
   target?: string
   action?: string
+  childrenOnly?: boolean // morph
+  requestId?: string // refresh
 }
 
 export class TurboTemplate {
@@ -65,6 +67,8 @@ export abstract class BaseTurboStreamRenderer {
 export default class TurboStream {
   constructor(protected ctx: HttpContext) {}
 
+  templates: TurboTemplate[] = []
+
   private static MIME_TYPE = 'text/vnd.turbo-stream.html'
 
   private setHeader() {
@@ -79,34 +83,82 @@ export default class TurboStream {
     return new TurboTemplate(path, state, directives)
   }
 
-  async renderUsing(renderer: BaseTurboStreamRenderer) {
-    /* Upgrade response */
-    this.setHeader()
-
-    if (this.isTurboStream()) {
-      const stream = renderer.stream()
-
-      if (stream === undefined) return
-
-      return this.render(stream)
-    } else {
-      return renderer.html()
-    }
+  // methods
+  prepend(path: string, state: Record<string, any>, target: string) {
+    const template = this.ctx.turboStream.from(path, state, { action: 'prepend', target })
+    this.templates.push(template)
+    return this
   }
 
-  async render(input: TurboTemplate | TurboTemplate[]) {
+  append(path: string, state: Record<string, any>, target: string) {
+    const template = this.ctx.turboStream.from(path, state, { action: 'append', target })
+    this.templates.push(template)
+    return this
+  }
+
+  replace(path: string, state: Record<string, any>, target: string) {
+    const template = this.ctx.turboStream.from(path, state, { action: 'replace', target })
+    this.templates.push(template)
+    return this
+  }
+
+  update(path: string, state: Record<string, any>, target: string) {
+    const template = this.ctx.turboStream.from(path, state, { action: 'update', target })
+    this.templates.push(template)
+    return this
+  }
+
+  remove(target: string) {
+    const template = new TurboTemplate('', {}, { action: 'remove', target })
+    this.templates.push(template)
+    return this
+  }
+
+  before(path: string, state: Record<string, any>, target: string) {
+    const template = this.ctx.turboStream.from(path, state, { action: 'before', target })
+    this.templates.push(template)
+    return this
+  }
+
+  after(path: string, state: Record<string, any>, target: string) {
+    const template = this.ctx.turboStream.from(path, state, { action: 'after', target })
+    this.templates.push(template)
+    return this
+  }
+
+  morph(path: string, state: Record<string, any>, target: string, childrenOnly: boolean) {
+    const template = this.ctx.turboStream.from(path, state, {
+      action: 'morph',
+      target,
+      childrenOnly,
+    })
+    this.templates.push(template)
+    return this
+  }
+
+  refresh(path: string, state: Record<string, any>, requestId: string) {
+    const template = this.ctx.turboStream.from(path, state, { action: 'morph', requestId })
+    this.templates.push(template)
+    return this
+  }
+
+  async render() {
     /* Upgrade response */
     this.setHeader()
 
-    if (input === undefined) return
+    if (this.templates.length === 0)
+      throw new Exception('No templates have been added for rendering')
 
-    if (Array.isArray(input)) return this.renderAll(input)
+    if (this.templates.length > 1) return this.renderAll(this.templates)
 
-    return this.renderOne(input)
+    return this.renderOne(this.templates[0])
   }
 
   async renderOne(template: TurboTemplate) {
     const { directives, path, state } = template
+
+    if (directives?.action === 'remove')
+      return this.ctx.view.render('turbo_stream', { body: '', directives })
 
     if (!path) throw new Exception('No template found')
 

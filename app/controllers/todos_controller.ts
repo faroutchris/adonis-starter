@@ -1,9 +1,12 @@
 import Todo from '#models/todo'
 import { saveTaskValidator, updateTaskValidator } from '#validators/todo'
-import { TodoIndexRender } from '#views/todos_index_render'
 import type { HttpContext, Request } from '@adonisjs/core/http'
 
 export default class TodosController {
+  todo = 'pages/todos/_task'
+
+  message = 'pages/todos/_success_notification'
+
   async index({ turboFrame, request }: HttpContext) {
     const todos = await Todo.all()
 
@@ -12,14 +15,23 @@ export default class TodosController {
     return turboFrame.render('pages/todos/index', { todos, showPriority })
   }
 
-  async save(ctx: HttpContext) {
-    const { request, turboStream } = ctx
+  async save({ request, response, session, turboStream }: HttpContext) {
     const { title } = await request.validateUsing(saveTaskValidator)
 
     const todo = await Todo.create({ title })
     const notification = `Added a new todo ${todo.id}`
 
-    return turboStream.renderUsing(new TodoIndexRender(ctx, { todo, notification }))
+    if (turboStream.isTurboStream()) {
+      console.log(this.todo)
+      return turboStream
+        .prepend(this.todo, { todo }, 'task-list')
+        .update(this.message, { notification }, 'toast-notification')
+        .render()
+    }
+
+    session.flash('success', notification)
+
+    return response.redirect().back()
   }
 
   async update({ params, request, response }: HttpContext) {
@@ -34,10 +46,14 @@ export default class TodosController {
     return response.redirect().back()
   }
 
-  async delete({ params, response }: HttpContext) {
+  async delete({ params, response, turboStream }: HttpContext) {
     const todo = await Todo.findByOrFail({ id: params.id })
 
     todo.delete()
+
+    if (turboStream.isTurboStream()) {
+      return turboStream.remove(`todo-${todo.id}`).render()
+    }
 
     return response.redirect().back()
   }

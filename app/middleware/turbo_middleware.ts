@@ -14,7 +14,7 @@ declare module '@adonisjs/core/http' {
 export default class TurboMiddleware {
   async handle(ctx: HttpContext, next: NextFn) {
     /**
-     * Add turboStream class
+     * Attach turboStream class
      */
     ctx.turboStream = new TurboStream(ctx)
     ctx.turboFrame = new TurboFrame(ctx, parse)

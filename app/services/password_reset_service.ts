@@ -4,7 +4,6 @@ import { DateTime } from 'luxon'
 import { randomUUID } from 'node:crypto'
 import env from '#start/env'
 import router from '@adonisjs/core/services/router'
-import app from '@adonisjs/core/services/app'
 
 export default class PasswordResetService {
   static async generate(user: User | null) {

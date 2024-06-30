@@ -27,7 +27,7 @@
       <ul class="list-group mt-5" id="task-list">
         @each(todo in todos)
         @component('turbo_frame', { id: `todo-${todo.id}` })
-        @include('pages/todos/task.edge')
+        @include('pages/todos/_task.edge')
         @end
         @end
       </ul>
@@ -57,7 +57,7 @@
 <div class="toast-container position-fixed top-0 end-0 m-4" aria-live="polite" aria-atomic="true"
   id="toast-notification">
   @if(flashMessages.has('success'))
-  @include('pages/todos/success_notification.edge')
+  @include('pages/todos/_success_notification.edge')
   @end
 </div>
 
