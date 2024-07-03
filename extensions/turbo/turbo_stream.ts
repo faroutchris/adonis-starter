@@ -5,7 +5,7 @@ import { HttpContext } from '@adonisjs/core/http'
  * Tasks:
  * [x] Create a TurboStreamMiddleware
  *    [-] Detects a turbo request and upgrades the response (adds mime-type)--
- *       Upgrading all responses with accept header makes all requests turbo streams - only upgrade before sending
+ *       Upgrading all responses with accept header makes all requests turbo streams - only upgrade before sending/rendering
  *    [x] Provides TurboStream with ctx, remove inject() both in class and at controller level
  *    [x] Provide ctx with an instance of TurboStream
  * [x] Figure out how to get rid of <turbo-stream> tags in the partials
@@ -15,11 +15,11 @@ import { HttpContext } from '@adonisjs/core/http'
  *    This means that the partials should not have any directives. We add them when we respond with a turbostream template
  * [] Add a provider for TurboStream if we need config - for example asset versioning, paths to layouts
  * [x] Add a pattern matching functionality of some type to ctx: switch (request.format) case html -> .. case turbo ->
- *    - Solved with class based approach ( new Renderer extends BaseTurboStreamRenderer {} )
+ *    - Using if statements, easier and less confusing
  * [] Populate turbo data/state with flashMessages
  * [x] Figure out a better way to render multiple templates for streams (turbo drive should only render one template btw)
  * [] Add support for all directives on TurboStream and TurboDrive
- * [] Align with rails api =>
+ * [x] Align with rails api =>
  *    Ruby: render turbo_stream: turbo_stream.append(:dom_id, partial: "some/template", locals: { message: message })
  *    JS: turboStream.append("selector", "some/template", { state })
  *    https://github.com/hotwired/turbo-rails/blob/main/app/models/turbo/streams/tag_builder.rb
@@ -27,15 +27,21 @@ import { HttpContext } from '@adonisjs/core/http'
  *    Docs: "Turbo provides CSRF protection by checking the DOM for the existence of a <meta> tag with a name value of either
  *          csrf-param or csrf-token. For example:
  *          <meta name="csrf-token" content="[your-token]">
+ *    Can we skip this and simply provide forms with {{csrfField}} and {{csrfToken}} as per adonis docs?
+ *    Where does this approach break down where we actually need to rely on turbo's handling of csrf-tokens?
+ *      - If using x-csrf-token token we need to make sure that the header is merged and the <meta>-tag with token is attached on every new
+ *        turbo frame and turbo stream
+ * [] Reload the entire view on E_BAD_CSRF_TOKEN + flash message
+ *     ??? <meta name="turbo-visit-control" content="reload">
  * [] Turbo Frames
- *    [] Render a minimal layout (<head /> + <turbo /> tags) when a turbo frame request is detected (request.headers["Turbo-Frame"])
+ *    [x] Render a minimal layout (<head /> + <turbo /> tags) when a turbo frame request is detected (request.headers["Turbo-Frame"])
  *       https://github.com/hotwired/turbo-rails/blob/main/app/controllers/turbo/frames/frame_request.rb
+ *       NOTE!!! Doesn't seem to actually merge the head on turbo frame requests
+ *    [x] Sets etag header to bust the cache
  * [] Expose TurboFrame & TurboStream classes to DI system (ie construct in provider)
+ *    Note: Is this possible in adonis v6? Seems to have been used as a technique for libraries in Adonis v5 a lot
+ * [] Configure edge plugin to render frames and streams https://github.com/adonisjs/inertia/blob/main/src/plugins/edge/plugin.ts
  */
-
-// API?
-// return turbo.stream.append()
-// return turbo.render()
 
 type TurboDirectives = {
   target?: string

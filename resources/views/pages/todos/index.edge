@@ -1,4 +1,5 @@
 @component('layout/turbo', { title: "Todos" })
+
 <main class="container mt-5">
   <h1>Task Manager</h1>
 
@@ -26,38 +27,21 @@
     <div class="col-5">
       <ul class="list-group mt-5" id="task-list">
         @each(todo in todos)
-        @component('turbo_frame', { id: `todo-${todo.id}` })
         @include('pages/todos/_task.edge')
-        @end
         @end
       </ul>
     </div>
   </div>
-
-  @component('turbo_frame', { id: "messages" })
-  <a href="{{ route('todos.index') }}?show={{showPriority}}">
-    @if(showPriority)
-    Hide priorities
-    @else
-    Show priorities
-    @end
-  </a>
-  @if(showPriority)
-  <ul>
-    <li>High</li>
-    <li>Medium</li>
-    <li>Low</li>
-  </ul>
-  @end
-  @end
 </main>
-
-
 
 <div class="toast-container position-fixed top-0 end-0 m-4" aria-live="polite" aria-atomic="true"
   id="toast-notification">
   @if(flashMessages.has('success'))
   @include('pages/todos/_success_notification.edge')
+  @end
+
+  @error('E_BAD_CSRF_TOKEN')
+  <p data-controller="force-reload"> {{ $message }} </p>
   @end
 </div>
 

@@ -1,9 +1,16 @@
 import { Controller } from '@hotwired/stimulus'
 
 export default class NotificationController extends Controller {
+  timeoutId: NodeJS.Timeout | undefined
+
   connect() {
-    setTimeout(() => {
+    this.timeoutId = setTimeout(() => {
       this.element.remove()
     }, 4000)
+  }
+
+  disconnect(): void {
+    clearTimeout(this.timeoutId)
+    this.element.remove()
   }
 }

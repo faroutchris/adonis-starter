@@ -1,18 +1,16 @@
 import Todo from '#models/todo'
 import { saveTaskValidator, updateTaskValidator } from '#validators/todo'
-import type { HttpContext, Request } from '@adonisjs/core/http'
+import type { HttpContext } from '@adonisjs/core/http'
 
 export default class TodosController {
   todo = 'pages/todos/_task'
 
   message = 'pages/todos/_success_notification'
 
-  async index({ turboFrame, request }: HttpContext) {
+  async index({ turboFrame }: HttpContext) {
     const todos = await Todo.all()
 
-    const showPriority = !this.getPriority(request)
-
-    return turboFrame.render('pages/todos/index', { todos, showPriority })
+    return turboFrame.render('pages/todos/index', { todos })
   }
 
   async save({ request, response, session, turboStream }: HttpContext) {
@@ -21,15 +19,14 @@ export default class TodosController {
     const todo = await Todo.create({ title })
     const notification = `Added a new todo ${todo.id}`
 
+    session.flash('success', notification)
+
     if (turboStream.isTurboStream()) {
-      console.log(this.todo)
       return turboStream
         .prepend(this.todo, { todo }, 'task-list')
         .update(this.message, { notification }, 'toast-notification')
         .render()
     }
-
-    session.flash('success', notification)
 
     return response.redirect().back()
   }
@@ -56,12 +53,5 @@ export default class TodosController {
     }
 
     return response.redirect().back()
-  }
-
-  // Could be on a service
-  private getPriority(request: Request) {
-    const qs = request.qs() as { show: string }
-
-    return qs.show === undefined || qs.show === 'true'
   }
 }

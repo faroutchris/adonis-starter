@@ -1,3 +1,4 @@
+@component('turbo_frame', { id: `todo-${todo.id}` })
 <li class="list-group-item d-flex align-items-start">
   <form method="POST" action="{{ route('todos.update', {id: todo.id} ) }}?_method=PUT" class="flex-grow-1"
     data-controller="onchangeform">
@@ -8,6 +9,7 @@
       <p {{ html.attrs({class: [{'text-muted': todo.done}]}) }}>{{todo.title}}</p>
     </label>
   </form>
+
   <form method="POST" action="{{ route('todos.delete', {id: todo.id} ) }}?_method=DELETE">
     {{ csrfField() }}
     <button class="btn btn-sm btn-secondary" type="submit">
@@ -19,3 +21,4 @@
     </button>
   </form>
 </li>
+@end
