@@ -3,6 +3,10 @@
 <main class="container mt-5">
   <h1>Task Manager</h1>
 
+  @component('turbo_frame', { id: "lazy", src: route("todos.lazy") })
+  Loading
+  @end
+
   <form class="row row-cols g-3 align-items-start mt-5" method="POST" action="{{ route('todos.save') }}"
     data-controller="clear-form">
     {{ csrfField() }}

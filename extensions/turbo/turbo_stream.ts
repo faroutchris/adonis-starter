@@ -75,6 +75,8 @@ export default class TurboStream {
 
   templates: TurboTemplate[] = []
 
+  private partial = `<turbo-stream action="{{directives.action}}" target="{{directives.target}}"><template>{{{ body }}}</template></turbo-stream>`
+
   private static MIME_TYPE = 'text/vnd.turbo-stream.html'
 
   private setHeader() {
@@ -164,7 +166,7 @@ export default class TurboStream {
     const { directives, path, state } = template
 
     if (directives?.action === 'remove')
-      return this.ctx.view.render('turbo_stream', { body: '', directives })
+      return this.ctx.view.renderRaw(this.partial, { body: '', directives })
 
     if (!path) throw new Exception('No template found')
 
@@ -172,7 +174,7 @@ export default class TurboStream {
     const body = await this.ctx.view.render(path, state)
 
     /* Inject partial and directives into the turbo stream component */
-    return this.ctx.view.render('turbo_stream', { body, directives })
+    return this.ctx.view.renderRaw(this.partial, { body, directives })
   }
 
   async renderAll(templates: TurboTemplate[]) {

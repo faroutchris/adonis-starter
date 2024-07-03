@@ -54,4 +54,17 @@ export default class TodosController {
 
     return response.redirect().back()
   }
+
+  async lazy({ turboFrame }: HttpContext) {
+    // Mock long running query
+    return new Promise((resolve) => {
+      setTimeout(() => {
+        resolve(
+          turboFrame.render('pages/todos/_lazy', {
+            message: 'My eager loaded message',
+          })
+        )
+      }, 2000)
+    })
+  }
 }
