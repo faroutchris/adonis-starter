@@ -64,7 +64,7 @@ export default class TodosController {
             message: 'My eager loaded message',
           })
         )
-      }, 2000)
+      }, 200)
     })
   }
 }
