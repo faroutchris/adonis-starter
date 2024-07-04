@@ -30,7 +30,7 @@ export default class MarkdownFileService {
 
   private static async readFile(slug: string) {
     try {
-      const url = app.makeURL(`public/articles/${slug}.md`)
+      const url = app.publicPath(`articles/${slug}.md`)
       return await readFile(url, 'utf-8')
     } catch (error) {
       throw new Exception(`Article not found: ${error.message}`, {

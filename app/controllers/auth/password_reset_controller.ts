@@ -2,7 +2,6 @@ import PasswordResetCookie from '#helpers/cookies/password_reset_cookie'
 import PasswordResetNotification from '#mails/password_reset_notification'
 import User from '#models/user'
 import PasswordResetService from '#services/password_reset_service'
-import env from '#start/env'
 import { passwordResetValidator, passwordResetVerifyValidator } from '#validators/auth'
 import { inject } from '@adonisjs/core'
 import type { HttpContext } from '@adonisjs/core/http'
@@ -35,9 +34,9 @@ export default class PasswordResetController {
     if (user) {
       const hash = await PasswordResetService.generate(user)
 
-      const link = `http://${env.get('HOST')}:${env.get('PORT')}/password/reset/${hash || ''}` // TODO fix
-
-      await mail.send(new PasswordResetNotification({ user, link }))
+      await mail.send(
+        new PasswordResetNotification({ user, link: PasswordResetService.generateLink(hash) })
+      )
     }
 
     return response.redirect().toRoute('auth.login.show')

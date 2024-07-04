@@ -1,0 +1,14 @@
+<turbo-frame 
+  {{ 
+    html.attrs({
+      id : $props.id, 
+      loading: $props.lazy ? "lazy" : false,
+      target: $props.target,
+      src: $props.src,
+      "data-turbo-action" : $props.action, 
+      "data-turbo-frame" : $props.turboFrame
+    }) 
+  }}
+>
+  {{{ await $slots.main() }}}
+</turbo-frame>

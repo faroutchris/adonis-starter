@@ -2,6 +2,8 @@ import Token from '#models/token'
 import User from '#models/user'
 import { DateTime } from 'luxon'
 import { randomUUID } from 'node:crypto'
+import env from '#start/env'
+import router from '@adonisjs/core/services/router'
 
 export default class PasswordResetService {
   static async generate(user: User | null) {
@@ -16,6 +18,16 @@ export default class PasswordResetService {
     })
 
     return record.hash
+  }
+
+  static generateLink(hash: string | null) {
+    const baseUrl = [
+      env.get('NODE_ENV') === 'production' ? 'https://' : 'http://',
+      env.get('HOST'),
+      env.get('NODE_ENV') === 'production' ? '' : `:${env.get('PORT')}`,
+    ].join('')
+
+    return router.builder().prefixUrl(baseUrl).params({ token: hash }).make('reset.verify')
   }
 
   static async expire(user: User) {

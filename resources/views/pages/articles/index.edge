@@ -3,12 +3,12 @@ title: "Blog"
 })
 
 <div class="container mt-5">
-  <form method="GET" class="mb-4">
+  <form method="GET" class="mb-4" data-controller="onchangeform" data-onchangeform-target="form">
     <div class="row g-3 align-items-center">
       <!-- order by date -->
       <div class="col col-auto mt-2 mt-lg-0">
         <select class="form-select form-control" aria-label="Order by date" id="order" name="order"
-          onchange="this.form.submit()">
+          data-action="change->onchangeform#submit">
           <option {{ html.attrs({ value: "asc" , selected: order==='asc' }) }}>Date Ascending</option>
           <option {{ html.attrs({ value: "desc" , selected: order==='desc' }) }}>Date Descending</option>
         </select>
@@ -16,7 +16,7 @@ title: "Blog"
       <!-- filter by author -->
       <div class="col col-auto mt-2 mt-lg-0">
         <select class="form-select form-control" aria-label="Filter by tags" id="author" name="author"
-          onchange="this.form.submit()">
+          data-action="change->onchangeform#submit">
           <option {{ html.attrs({ selected: !filters.author, disabled: true }) }}>Filter by authors</option>
           @each(author in authors)
           <option {{ html.attrs({ value: author, selected: filters.author===author }) }}>
@@ -28,7 +28,7 @@ title: "Blog"
       <!-- filter by tags -->
       <div class="col col-auto mt-2 mt-lg-0">
         <select class="form-select form-control" aria-label="Filter by tags" id="tag" name="tag"
-          onchange="this.form.submit()">
+          data-action="change->onchangeform#submit">
           <option {{ html.attrs({ selected: !filters.tag, disabled: true }) }}>Filter by tags</option>
           @each(tag in tags)
           <option {{ html.attrs({ value: tag, selected: filters.tag===tag }) }}>
@@ -47,25 +47,7 @@ title: "Blog"
       @end
     </div>
   </form>
-  @if(articles.length)
-  <ul class="list-group mb-4">
-    @each((article, index) in articles)
-    <li class="list-group-item">
-      <a href="{{ route('articles.show', { slug: article.slug }) }}">
-        {{ article.title }}
-      </a>
-      <p>{{ article.description }}</p>
-    </li>
-    @end
-  </ul>
-  @else
-  <div class="card mb-4">
-    <div class="card-body text-center">
-      <p class="card-text"> Nothing here.</p>
-      <a class="btn btn-primary card-link" href="{{ route('articles.index') }}">Clear filters</a>
-    </div>
-  </div>
-  @end
+  @!articles({articles})
   <p>
     <a href="{{ route('home') }}">Back to homepage</a>
   </p>
