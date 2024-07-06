@@ -9,6 +9,8 @@
 
 import router from '@adonisjs/core/services/router'
 import { middleware } from './kernel.js'
+
+const EmployeesController = () => import('#controllers/employees_controller')
 const TodosController = () => import('#controllers/todos_controller')
 const ProfilesController = () => import('#controllers/profiles_controller')
 const PasswordResetController = () => import('#controllers/auth/password_reset_controller')
@@ -136,3 +138,17 @@ router.post('/todos', [TodosController, 'save']).as('todos.save').use(middleware
 router.put('/todos/:id', [TodosController, 'update']).as('todos.update').use(middleware.auth())
 router.delete('/todos/:id', [TodosController, 'delete']).as('todos.delete').use(middleware.auth())
 router.get('/todos/lazyloaded', [TodosController, 'lazy']).as('todos.lazy').use(middleware.auth())
+
+/*
+|--------------------------------------------------------------------------
+| Employee datatable
+|--------------------------------------------------------------------------
+|
+| Test out some more advanced features for hotwire
+|
+*/
+
+router
+  .get('/employees', [EmployeesController, 'index'])
+  .as('employees.index')
+  .use(middleware.auth())

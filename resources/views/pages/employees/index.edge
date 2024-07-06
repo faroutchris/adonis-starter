@@ -1,0 +1,74 @@
+@let(nextPageUrl = employees.getNextPageUrl())
+@let(prevPageUrl = employees.getPreviousPageUrl())
+
+@component('layout/main', { title: "Employees" })
+
+<div class="container mt-5">
+  @component('turbo_frame', { id: "employee-table", action: "advance" })
+
+  <form method="GET" class="mb-4">
+    <div class="row g-3 align-items-center">
+      <!-- order by salary -->
+      <div class="col col-auto mt-2 mt-lg-0">
+        @!formInput({
+        label: 'Search',
+        name: 'search',
+        id: 'search',
+        type: 'text'
+        })
+      </div>
+    </div>
+  </form>
+
+  <div class="mt-4 table-responsive">
+    <table class="table table-striped table-hover table-sm">
+      <thead>
+        <tr>
+          <th scope="col">
+            Name
+            <a href="/employees?sort=name&order=asc">&UpArrow;</a>
+            <a href="/employees?sort=name&order=desc">&DownArrow;</a>
+          </th>
+          <th scope="col">City</th>
+          <th scope="col">Position</th>
+          <th scope="col">
+            Salary
+            <a href="/employees?sort=salary&order=asc">&UpArrow;</a>
+            <a href="/employees?sort=salary&order=desc">&DownArrow;</a>
+          </th>
+        </tr>
+      </thead>
+      <tbody class="table-group-divider">
+        @each(employee in employees)
+        <tr>
+          <td><b>{{ employee.name }}</b></td>
+          <td>{{ employee.city }}</td>
+          <td>{{ employee.position }}</td>
+          <td>${{ employee.salary }}</td>
+        </tr>
+        @endeach
+      </tbody>
+    </table>
+  </div>
+
+  @if(employees.hasPages)
+
+  @if (prevPageUrl)
+  <a href="{{ prevPageUrl }}">Previous</a>
+  @end
+
+  @each(anchor in employees.getUrlsForRange(clamp(employees.currentPage - 3, 1, Infinity), employees.currentPage + 3))
+  <a href="{{ anchor.url }}">
+    {{ anchor.page }}
+  </a>
+  @endeach
+
+  @if (nextPageUrl)
+  <a href="{{ nextPageUrl }}">Next</a>
+  @end
+
+  @end
+
+  @end
+</div>
+@end
