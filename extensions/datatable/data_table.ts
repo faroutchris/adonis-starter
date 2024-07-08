@@ -2,53 +2,52 @@ import { HttpContext } from '@adonisjs/core/http'
 import { LucidModel } from '@adonisjs/lucid/types/model'
 import { DatabaseQueryBuilderContract } from '@adonisjs/lucid/types/querybuilder'
 
-type Config = {
+export type DatatableConfig = {
   baseUrl: string
-  searchable: string
+  pagination: { perPage: number }
   select: string[]
+  searchable: string[]
   sortable: Record<string, string>
   filterable: Record<string, string>
 }
 
 export default class Datatable {
-  ctx: HttpContext
-  query: () => DatabaseQueryBuilderContract<LucidModel>
-  config: Config
+  private query: () => DatabaseQueryBuilderContract<LucidModel>
+  private config: DatatableConfig
 
-  constructor(
-    ctx: HttpContext,
-    query: () => DatabaseQueryBuilderContract<LucidModel>,
-    config: Config
-  ) {
-    this.ctx = ctx
+  constructor(query: () => DatabaseQueryBuilderContract<LucidModel>, config: DatatableConfig) {
     this.query = query
     this.config = config
   }
 
-  async create() {
-    const { page, perPage } = this.ctx.request.all()
+  async create(ctx: HttpContext) {
+    const { page, perPage } = ctx.request.all()
 
     const query = this.query.call(this).select(...this.config.select)
 
-    this.applySorting(query)
-    this.applyFilter(query)
-    this.applySearch(query)
+    this.applySorting(query, ctx)
+    this.applyFilter(query, ctx)
+    this.applySearch(query, ctx)
 
-    const q = await query.paginate(Number(page) || 1, Number(perPage) || 20)
+    const q = await query.paginate(
+      Number(page) || 1,
+      Number(perPage) || this.config.pagination.perPage
+    )
 
-    return q.baseUrl(this.config.baseUrl).queryString(this.ctx.request.all())
+    return q.baseUrl(this.config.baseUrl).queryString(ctx.request.all())
   }
 
-  applySearch(query: DatabaseQueryBuilderContract<LucidModel>) {
-    const { search } = this.ctx.request.all()
-
+  private applySearch(query: DatabaseQueryBuilderContract<LucidModel>, ctx: HttpContext) {
+    const { search } = ctx.request.all()
     if (search) {
-      query.whereILike(this.config.searchable, `%${search}%`)
+      for (let searchable of this.config.searchable) {
+        query.orWhereILike(searchable, `%${search}%`)
+      }
     }
   }
 
-  applyFilter(query: DatabaseQueryBuilderContract<LucidModel>) {
-    const { filter, filterValue } = this.ctx.request.all()
+  private applyFilter(query: DatabaseQueryBuilderContract<LucidModel>, ctx: HttpContext) {
+    const { filter, filterValue } = ctx.request.all()
 
     for (let filterable in this.config.filterable) {
       if (filter === filterable) {
@@ -57,8 +56,8 @@ export default class Datatable {
     }
   }
 
-  applySorting(query: DatabaseQueryBuilderContract<LucidModel>) {
-    const { sort, order } = this.ctx.request.all()
+  private applySorting(query: DatabaseQueryBuilderContract<LucidModel>, ctx: HttpContext) {
+    const { sort, order } = ctx.request.all()
 
     for (let sortable in this.config.sortable) {
       if (sortable === sort) {
