@@ -2,3 +2,7 @@
   height: 4px;
   background-color: red;
 }
+
+thead th:hover {
+  background: #eee;
+}

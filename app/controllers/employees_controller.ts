@@ -1,10 +1,10 @@
-import Datatable from '#extensions/datatable/data_table'
+import Employee from '#models/employee'
 import type { HttpContext } from '@adonisjs/core/http'
-import db from '@adonisjs/lucid/services/db'
 
 const tableConfig = {
   baseUrl: '/employees',
-  select: ['*'],
+  pagination: { perPage: 10 },
+  select: ['city', 'name', 'salary', 'position'],
   // mark filterable fields
   filterable: {
     city: 'city', // filterByCity
@@ -16,15 +16,46 @@ const tableConfig = {
     name: 'name', // sortByName
   },
   // mark searchable fields
-  searchable: 'name',
+  searchable: ['name', 'city', 'position'],
 }
 
 export default class EmployeesController {
   async index(ctx: HttpContext) {
     const { turboFrame } = ctx
 
-    const employees = await new Datatable(ctx, () => db.from('employees'), tableConfig).create()
+    const employees = await Employee.query().datatable(ctx, tableConfig)
 
-    return turboFrame.render('pages/employees/index', { employees })
+    const appendQueryString = (q: Record<string, string>) => {
+      const newQs = { ...ctx.request.all(), ...q }
+
+      let str = Object.entries(newQs)
+        .map(([key, val]) => `${key}=${val}`)
+        .join('&')
+
+      return tableConfig.baseUrl + '?' + str
+    }
+
+    const clearSearch = (q: Record<string, string>) => {
+      const newQs = { ...ctx.request.all(), ...q }
+
+      delete newQs.search
+
+      let str = Object.entries(newQs)
+        .map(([key, val]) => `${key}=${val}`)
+        .join('&')
+
+      return tableConfig.baseUrl + '?' + str
+    }
+
+    const getQueryString = (key: string) => {
+      return ctx.request.all()[key]
+    }
+
+    return turboFrame.render('pages/employees/index', {
+      employees,
+      appendQueryString,
+      getQueryString,
+      clearSearch,
+    })
   }
 }

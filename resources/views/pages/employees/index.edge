@@ -1,5 +1,7 @@
 @let(nextPageUrl = employees.getNextPageUrl())
 @let(prevPageUrl = employees.getPreviousPageUrl())
+@let(perPageList = [10, 20, 30])
+
 
 @component('layout/main', { title: "Employees" })
 
@@ -8,67 +10,98 @@
 
   <form method="GET" class="mb-4">
     <div class="row g-3 align-items-center">
-      <!-- order by salary -->
-      <div class="col col-auto mt-2 mt-lg-0">
-        @!formInput({
-        label: 'Search',
-        name: 'search',
-        id: 'search',
-        type: 'text'
-        })
-      </div>
+
+      @!formInput({
+      label: 'Search',
+      name: 'search',
+      id: 'search',
+      type: 'text'
+      })
+      <a href="{{clearSearch()}}">Clear</a>
     </div>
   </form>
 
-  <div class="mt-4 table-responsive">
-    <table class="table table-striped table-hover table-sm">
+  <div class=" mt-4">
+    <table class="table table-hover table-sm table-bordered table-striped">
       <thead>
         <tr>
-          <th scope="col">
-            Name
-            <a href="/employees?sort=name&order=asc">&UpArrow;</a>
-            <a href="/employees?sort=name&order=desc">&DownArrow;</a>
+          <th scope="col" class="col-3 p-0">
+            <a href="{{ appendQueryString({sort: 'name', order: getQueryString('order') === 'desc' ? 'asc' : 'desc' }) }}"
+              class="d-flex justify-content-between align-items-center text-body text-decoration-none p-2">
+              Name
+              @!caret({ fill: "primary", direction: getQueryString('sort') === 'name' ?
+              getQueryString('order')
+              === 'desc' ? 'desc' : 'asc' : "none" })
+            </a>
           </th>
-          <th scope="col">City</th>
-          <th scope="col">Position</th>
-          <th scope="col">
-            Salary
-            <a href="/employees?sort=salary&order=asc">&UpArrow;</a>
-            <a href="/employees?sort=salary&order=desc">&DownArrow;</a>
+          <th scope="col" class="col-4 text-body">Position</th>
+          <th scope="col" class="col-4 text-body">City</th>
+          <th scope="col" class="col-3 text-end p-0">
+            <a href="{{ appendQueryString({sort: 'salary', order: getQueryString('order') === 'desc' ? 'asc' : 'desc' }) }}"
+              class="d-flex justify-content-between align-items-center text-body text-decoration-none p-2">
+              Salary
+              @!caret({ fill: "primary",direction: getQueryString('sort') === 'salary' ?
+              getQueryString('order')
+              === 'desc' ? 'desc' : 'asc' : 'none'} )
+            </a>
           </th>
         </tr>
       </thead>
-      <tbody class="table-group-divider">
+      <tbody>
         @each(employee in employees)
         <tr>
-          <td><b>{{ employee.name }}</b></td>
-          <td>{{ employee.city }}</td>
-          <td>{{ employee.position }}</td>
-          <td>${{ employee.salary }}</td>
+          <td class="fw-medium">{{ employee.name }}</td>
+          <td class="text-muted">{{ employee.position }}</td>
+          <td class="text-muted">{{ employee.city }}</td>
+          <td class="text-end font-monospace">€{{ employee.salary }}.00</td>
         </tr>
         @endeach
       </tbody>
     </table>
   </div>
 
-  @if(employees.hasPages)
+  <div class="d-flex flex-row align-items-center justify-content-between">
+    @if(employees.hasPages)
+    <nav aria-label="Page navigation example">
+      <ul class="pagination">
+        @if (prevPageUrl)
+        <li class="page-item">
+          <a class="page-link" href="{{ prevPageUrl }}">Previous</a>
+        </li>
 
-  @if (prevPageUrl)
-  <a href="{{ prevPageUrl }}">Previous</a>
-  @end
+        @end
 
-  @each(anchor in employees.getUrlsForRange(clamp(employees.currentPage - 3, 1, Infinity), employees.currentPage + 3))
-  <a href="{{ anchor.url }}">
-    {{ anchor.page }}
-  </a>
-  @endeach
+        @each(anchor in employees.getUrlsForRange( clamp(employees.currentPage - 2, 1, Infinity),
+        clamp(employees.currentPage
+        + 2, 0, employees.lastPage)) )
+        <li class="page-item">
+          <a class="{{ html.classNames([ " page-link" , {"active": employees.currentPage===anchor.page} ]) }}"
+            href="{{ anchor.url }}">{{ anchor.page }}</a>
+        </li>
+        @endeach
 
-  @if (nextPageUrl)
-  <a href="{{ nextPageUrl }}">Next</a>
-  @end
-
-  @end
-
+        @if (nextPageUrl)
+        <li class="page-item">
+          <a class="page-link" href="{{ nextPageUrl }}">Next</a>
+        </li>
+        @end
+      </ul>
+    </nav>
+    @end
+    <form method="GET" data-controller="onchangeform">
+      <div class="row align-items-center">
+        <div class="col col-auto">
+          <select class="form-select form-control" aria-label="Change rows per page" id="perPage" name="perPage"
+            data-action="change->onchangeform#submit">
+            @each(num in perPageList)
+            <option value="{{num}}" {{ html.attrs({ selected: getQueryString('perPage')===String(num) || num===10 }) }}>
+              {{num}}</option>
+            @endeach
+          </select>
+        </div>
+      </div>
+    </form>
+  </div>
   @end
 </div>
 @end
