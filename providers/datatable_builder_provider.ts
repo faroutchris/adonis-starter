@@ -51,14 +51,12 @@ export default class DatatableBuilderProvider {
     DatabaseQueryBuilder.macro('datatable', function (ctx: HttpContext, config: DatatableConfig) {
       // @ts-ignore
       const self = this as DatabaseQueryBuilder
-
       return new Datatable(() => self, config).create(ctx)
     })
 
     ModelQueryBuilder.macro('datatable', function (ctx: HttpContext, config: DatatableConfig) {
       // @ts-ignore
       const self = this as DatabaseQueryBuilder
-
       return new Datatable(() => self, config).create(ctx)
     })
   }
