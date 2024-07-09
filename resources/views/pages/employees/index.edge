@@ -60,7 +60,7 @@
     </table>
   </div>
 
-  <div class="d-flex flex-row align-items-center justify-content-between">
+  <div class="d-flex flex-row align-items-top justify-content-between">
     @if(employees.hasPages)
     <nav aria-label="Page navigation example">
       <ul class="pagination">
@@ -68,7 +68,6 @@
         <li class="page-item">
           <a class="page-link" href="{{ prevPageUrl }}">Previous</a>
         </li>
-
         @end
 
         @each(anchor in employees.getUrlsForRange( clamp(employees.currentPage - 2, 1, Infinity),

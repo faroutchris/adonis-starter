@@ -20,14 +20,6 @@ export class TurboTemplate {
   }
 }
 
-export abstract class BaseTurboStreamRenderer {
-  constructor(protected ctx: HttpContext) {}
-
-  stream(): TurboTemplate | TurboTemplate[] | void {}
-
-  html(): Promise<string> | void {}
-}
-
 export default class TurboStream {
   constructor(protected ctx: HttpContext) {}
 
