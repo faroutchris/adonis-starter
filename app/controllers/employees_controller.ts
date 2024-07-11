@@ -23,7 +23,7 @@ export default class EmployeesController {
   async index(ctx: HttpContext) {
     const { turboFrame } = ctx
 
-    const employees = await Employee.query().datatable(ctx, tableConfig)
+    const employees = await Employee.query().datatable(ctx.request.all(), tableConfig)
 
     const appendQueryString = (q: Record<string, string>) => {
       const newQs = { ...ctx.request.all(), ...q }
