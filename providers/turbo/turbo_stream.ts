@@ -20,14 +20,6 @@ export class TurboTemplate {
   }
 }
 
-export abstract class BaseTurboStreamRenderer {
-  constructor(protected ctx: HttpContext) {}
-
-  stream(): TurboTemplate | TurboTemplate[] | void {}
-
-  html(): Promise<string> | void {}
-}
-
 export default class TurboStream {
   constructor(protected ctx: HttpContext) {}
 
@@ -51,25 +43,25 @@ export default class TurboStream {
 
   // methods
   prepend(path: string, state: Record<string, any>, target: string) {
-    const template = this.ctx.turboStream.from(path, state, { action: 'prepend', target })
+    const template = this.from(path, state, { action: 'prepend', target })
     this.templates.push(template)
     return this
   }
 
   append(path: string, state: Record<string, any>, target: string) {
-    const template = this.ctx.turboStream.from(path, state, { action: 'append', target })
+    const template = this.from(path, state, { action: 'append', target })
     this.templates.push(template)
     return this
   }
 
   replace(path: string, state: Record<string, any>, target: string) {
-    const template = this.ctx.turboStream.from(path, state, { action: 'replace', target })
+    const template = this.from(path, state, { action: 'replace', target })
     this.templates.push(template)
     return this
   }
 
   update(path: string, state: Record<string, any>, target: string) {
-    const template = this.ctx.turboStream.from(path, state, { action: 'update', target })
+    const template = this.from(path, state, { action: 'update', target })
     this.templates.push(template)
     return this
   }
@@ -81,19 +73,19 @@ export default class TurboStream {
   }
 
   before(path: string, state: Record<string, any>, target: string) {
-    const template = this.ctx.turboStream.from(path, state, { action: 'before', target })
+    const template = this.from(path, state, { action: 'before', target })
     this.templates.push(template)
     return this
   }
 
   after(path: string, state: Record<string, any>, target: string) {
-    const template = this.ctx.turboStream.from(path, state, { action: 'after', target })
+    const template = this.from(path, state, { action: 'after', target })
     this.templates.push(template)
     return this
   }
 
   morph(path: string, state: Record<string, any>, target: string, childrenOnly: boolean) {
-    const template = this.ctx.turboStream.from(path, state, {
+    const template = this.from(path, state, {
       action: 'morph',
       target,
       childrenOnly,
@@ -103,7 +95,7 @@ export default class TurboStream {
   }
 
   refresh(path: string, state: Record<string, any>, requestId: string) {
-    const template = this.ctx.turboStream.from(path, state, { action: 'morph', requestId })
+    const template = this.from(path, state, { action: 'morph', requestId })
     this.templates.push(template)
     return this
   }

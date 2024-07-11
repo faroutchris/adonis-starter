@@ -18,7 +18,6 @@ export default class TodosController {
 
     const todo = await Todo.create({ title })
     const notification = `Added a new todo ${todo.id}`
-
     session.flash('success', notification)
 
     if (turboStream.isTurboStream()) {
