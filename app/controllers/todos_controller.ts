@@ -20,9 +20,8 @@ export default class TodosController {
     const notification = `Added a new todo ${todo.id}`
     session.flash('success', notification)
 
-    const ts = turboStream()
-    if (ts.isTurboStream()) {
-      return ts
+    if (turboStream.isTurboStream()) {
+      return turboStream
         .prepend(this.todo, { todo }, 'task-list')
         .update(this.message, { notification }, 'toast-notification')
         .render()
@@ -48,10 +47,8 @@ export default class TodosController {
 
     todo.delete()
 
-    const ts = turboStream()
-
-    if (ts.isTurboStream()) {
-      return ts.remove(`todo-${todo.id}`).render()
+    if (turboStream.isTurboStream()) {
+      return turboStream.remove(`todo-${todo.id}`).render()
     }
 
     return response.redirect().back()

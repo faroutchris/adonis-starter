@@ -21,9 +21,7 @@ export class TurboTemplate {
 }
 
 export default class TurboStream {
-  constructor(protected ctx: HttpContext) {
-    console.log('constructor --->', ctx)
-  }
+  constructor(protected ctx: HttpContext) {}
 
   templates: TurboTemplate[] = []
 
@@ -36,7 +34,6 @@ export default class TurboStream {
   }
 
   isTurboStream() {
-    console.log(this)
     return this.ctx.request.header('Accept')?.includes(TurboStream.MIME_TYPE)
   }
 
