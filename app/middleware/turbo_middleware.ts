@@ -6,7 +6,7 @@ import { parse } from 'node-html-parser'
 
 declare module '@adonisjs/core/http' {
   export interface HttpContext {
-    turboStream: TurboStream
+    // turboStream: TurboStream
     turboFrame: TurboFrame
   }
 }
@@ -16,7 +16,7 @@ export default class TurboMiddleware {
     /**
      * Attach turboStream class
      */
-    ctx.turboStream = new TurboStream(ctx)
+    // ctx.turboStream = new TurboStream(ctx)
     ctx.turboFrame = new TurboFrame(ctx, parse)
 
     // Todo Add turbo view helpers here:
