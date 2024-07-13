@@ -1,10 +1,10 @@
-import Datatable, { DatatableConfig } from '#extensions/datatable/data_table'
+import Datatable, { DatatableConfig } from '#providers/data_table/data_table'
+import { HttpContext } from '@adonisjs/core/http'
 import type { ApplicationService } from '@adonisjs/core/types'
 import { DatabaseQueryBuilder } from '@adonisjs/lucid/database'
 import { ModelQueryBuilder } from '@adonisjs/lucid/orm'
 import { LucidModel } from '@adonisjs/lucid/types/model'
-import { SimplePaginatorContract } from '@adonisjs/lucid/types/querybuilder'
-
+import ExtendedPaginator from './extended_paginator.js'
 /**
  * Declare datatable on the contract namespaces
  */
@@ -14,7 +14,7 @@ declare module '@adonisjs/lucid/types/querybuilder' {
     datatable: (
       queryString: Record<string, string>,
       config: DatatableConfig
-    ) => Promise<SimplePaginatorContract<LucidModel>>
+    ) => Promise<ExtendedPaginator<LucidModel>>
   }
 }
 
@@ -23,7 +23,7 @@ declare module '@adonisjs/lucid/database' {
     datatable: (
       queryString: Record<string, string>,
       config: DatatableConfig
-    ) => Promise<SimplePaginatorContract<LucidModel>>
+    ) => Promise<ExtendedPaginator<LucidModel>>
   }
 }
 
@@ -32,7 +32,7 @@ declare module '@adonisjs/lucid/orm' {
     datatable: (
       queryString: Record<string, string>,
       config: DatatableConfig
-    ) => Promise<SimplePaginatorContract<LucidModel>>
+    ) => Promise<ExtendedPaginator<LucidModel>>
   }
 }
 
@@ -50,8 +50,10 @@ export default class DatatableBuilderProvider {
     DatabaseQueryBuilder.macro(
       'datatable',
       function (queryString: Record<string, string>, config: DatatableConfig) {
+        HttpContext.get()
         // @ts-ignore
         const self = this as DatabaseQueryBuilder
+
         return new Datatable(() => self, config).apply(queryString)
       }
     )
@@ -61,6 +63,13 @@ export default class DatatableBuilderProvider {
       function (queryString: Record<string, string>, config: DatatableConfig) {
         // @ts-ignore
         const self = this as DatabaseQueryBuilder
+
+        // const model = self.model
+
+        // const columns = self.model.$columnsDefinitions.keys()
+
+        // console.log(model, columns)
+
         return new Datatable(() => self, config).apply(queryString)
       }
     )

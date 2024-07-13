@@ -42,7 +42,7 @@ export default defineConfig({
     () => import('@adonisjs/auth/auth_provider'),
     () => import('@adonisjs/mail/mail_provider'),
     () => import('#providers/turbo/turbo_provider'),
-    () => import('#providers/datatable_builder_provider'),
+    () => import('#providers/data_table/datatable_builder_provider'),
   ],
 
   /*

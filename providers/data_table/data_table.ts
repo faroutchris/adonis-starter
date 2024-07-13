@@ -1,6 +1,7 @@
-import db from '@adonisjs/lucid/services/db'
 import { LucidModel } from '@adonisjs/lucid/types/model'
 import { DatabaseQueryBuilderContract } from '@adonisjs/lucid/types/querybuilder'
+import ExtendedPaginator from './extended_paginator.js'
+import db from '@adonisjs/lucid/services/db'
 
 export type DatatableConfig = {
   baseUrl: string
@@ -20,20 +21,27 @@ export default class Datatable {
     this.config = config
   }
 
-  async apply(queryString: Record<string, string>) {
-    const query = this.query.call(this).select(...this.config.select)
-    const columns = await this.getAllColumns()
-    console.log(columns)
-    this.applySorting(query, queryString)
-    this.applyFilter(query, queryString)
-    this.applySearch(query, queryString)
-    return this.applyPaginate(query, queryString)
-  }
-
   private async getAllColumns() {
     return db.rawQuery(
       "SELECT json_object_keys(to_json(json_populate_record(NULL::employees, '{}'::JSON)))"
     )
+  }
+
+  async apply(queryString: Record<string, string>) {
+    const query = this.query.call(this).select(...this.config.select)
+    this.applySorting(query, queryString)
+    this.applyFilter(query, queryString)
+    this.applySearch(query, queryString)
+    const paginator = await this.applyPaginate(query, queryString)
+
+    return new ExtendedPaginator(
+      paginator.total,
+      paginator.perPage,
+      paginator.currentPage,
+      ...paginator.all()
+    )
+      .baseUrl(this.config.baseUrl)
+      .queryString(queryString)
   }
 
   private async applyPaginate(

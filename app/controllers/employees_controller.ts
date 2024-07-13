@@ -35,18 +35,6 @@ export default class EmployeesController {
       return tableConfig.baseUrl + '?' + str
     }
 
-    const clearSearch = (q: Record<string, string>) => {
-      const newQs = { ...ctx.request.all(), ...q }
-
-      delete newQs.search
-
-      let str = Object.entries(newQs)
-        .map(([key, val]) => `${key}=${val}`)
-        .join('&')
-
-      return tableConfig.baseUrl + '?' + str
-    }
-
     const getQueryString = (key: string) => {
       return ctx.request.all()[key]
     }
@@ -55,7 +43,6 @@ export default class EmployeesController {
       employees,
       appendQueryString,
       getQueryString,
-      clearSearch,
     })
   }
 }
