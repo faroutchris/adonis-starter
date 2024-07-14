@@ -21,28 +21,10 @@ const tableConfig = {
 
 export default class EmployeesController {
   async index(ctx: HttpContext) {
-    const { turboFrame } = ctx
+    const { view } = ctx
 
     const employees = await Employee.query().datatable(ctx.request.all(), tableConfig)
 
-    const appendQueryString = (q: Record<string, string>) => {
-      const newQs = { ...ctx.request.all(), ...q }
-
-      let str = Object.entries(newQs)
-        .map(([key, val]) => `${key}=${val}`)
-        .join('&')
-
-      return tableConfig.baseUrl + '?' + str
-    }
-
-    const getQueryString = (key: string) => {
-      return ctx.request.all()[key]
-    }
-
-    return turboFrame.render('pages/employees/index', {
-      employees,
-      appendQueryString,
-      getQueryString,
-    })
+    return view.render('pages/employees/index', { employees })
   }
 }
