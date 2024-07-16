@@ -59,24 +59,30 @@ title: "Employees"
     @if(employees.hasPages)
     <nav aria-label="Page navigation example">
       <ul class="pagination">
-        @if (prevPageUrl)
+        {{-- @if (prevPageUrl)
         <li class="page-item">
           <a class="page-link" href="{{ prevPageUrl }}">Previous</a>
         </li>
-        @end
+        @end --}}
 
-        @each(anchor in employees.getUrlsForRange(1, employees.lastPage))
-        <li class="page-item">
-          <a class="{{ html.classNames([ 'page-link', {'active': employees.currentPage===anchor.page} ]) }}"
-            href="{{ anchor.url }}">{{ anchor.page }}</a>
-        </li>
+        @each(index in employees.generatePaginationRange(employees.currentPage, employees.lastPage))
+        @if(Number(index) === NaN)
+        {{index}}
+        @else
+        {{-- <li class="page-item">
+          <a class="{{ html.classNames([ 'page-link', {'active': employees.currentPage===employees[Number(index)]page} ]) }}"
+            href="{{ employees[Number(index)]url }}">{{ employees[Number(index)].page }}</a>
+
+        </li> --}}
+        {{inspect(employees[Number(index)])}}
+        @end
         @endeach
 
-        @if (nextPageUrl)
+        {{-- @if (nextPageUrl)
         <li class="page-item">
           <a class="page-link" href="{{ nextPageUrl }}">Next</a>
         </li>
-        @end
+        @end --}}
       </ul>
     </nav>
     @end
