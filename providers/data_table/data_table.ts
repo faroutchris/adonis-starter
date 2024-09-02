@@ -69,7 +69,11 @@ export default class Datatable {
 
     if (search) {
       for (let searchable of this.config.searchable) {
-        query.orWhereILike(searchable, `%${search}%`)
+        query.ifDialect(
+          'better-sqlite3',
+          (q) => q.orWhereLike(searchable, `%${search}%`),
+          (q) => q.orWhereILike(searchable, `%${search}%`)
+        )
       }
     }
   }
