@@ -26,3 +26,6 @@ yarn-error.log
 
 # railway
 railway-prod-connection.json
+
+# db
+*.sqlite
