@@ -1,19 +1,22 @@
 import Employee from '#models/employee'
+import { employeeUpdateValidator } from '#validators/employee'
 import type { HttpContext } from '@adonisjs/core/http'
 
 const tableConfig = {
   baseUrl: '/employees',
   pagination: { perPage: 10 },
-  select: ['city', 'name', 'salary', 'position'],
+  select: ['*'],
   // mark filterable fields
+  // TODO - refactor to string[]
   filterable: {
-    city: 'city', // filterByCity
-    name: 'name', // filterByName
+    city: 'city',
+    name: 'name',
+    salary: 'salary',
   },
   // mark sortable fields
   sortable: {
-    salary: 'salary', // sortBySalary
-    name: 'name', // sortByName
+    salary: 'salary',
+    name: 'name',
   },
   // mark searchable fields
   searchable: ['name', 'city', 'position'],
@@ -21,10 +24,31 @@ const tableConfig = {
 
 export default class EmployeesController {
   async index(ctx: HttpContext) {
-    const { view } = ctx
+    const { turboFrame } = ctx
 
     const employees = await Employee.query().datatable(ctx.request.all(), tableConfig)
 
-    return view.render('pages/employees/index', { employees })
+    return turboFrame.render('pages/employees/index', { employees })
+  }
+
+  async update({ params, request, turboStream }: HttpContext) {
+    const columns = await request.validateUsing(employeeUpdateValidator)
+
+    const employee = await Employee.findOrFail(params.id)
+
+    const saved = await employee.merge(columns).save()
+
+    return turboStream
+      .update('pages/employees/_table_row', { employee: saved }, `table-row-${params.id}`)
+      .render()
+  }
+
+  async delete({ params, turboStream }: HttpContext) {
+    const employee = await Employee.findOrFail(params.id)
+    console.log(employee)
+
+    await employee.delete()
+
+    return turboStream.remove(`table-row-${params.id}`).render()
   }
 }

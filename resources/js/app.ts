@@ -1,4 +1,3 @@
-import '../css/bootstrap.min.css'
 import 'bootstrap'
 import '@hotwired/turbo'
 import { Application } from '@hotwired/stimulus'
@@ -7,6 +6,8 @@ import NotificationController from './controllers/notification.js'
 import FormItController from './controllers/form_it.js'
 import ClearFormController from './controllers/clear_form.js'
 import ForceReloadController from './controllers/force_reload.js'
+import DialogController from './controllers/dialog.js'
+import ConfirmFormSubmitController from './controllers/confirm_form_submit.js'
 
 declare global {
   interface Window {
@@ -20,3 +21,5 @@ window.Stimulus.register('onchangeform', OnChangeFormController)
 window.Stimulus.register('notification', NotificationController)
 window.Stimulus.register('clear-form', ClearFormController)
 window.Stimulus.register('force-reload', ForceReloadController)
+window.Stimulus.register('dialog', DialogController)
+window.Stimulus.register('confirm-form-submit', ConfirmFormSubmitController)

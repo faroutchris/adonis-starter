@@ -6,8 +6,8 @@
 title: "Employees"
 })
 <div class="container mt-5">
-  @component('turbo_frame', { id: "employee-table", action: "advance" })
-
+  @turboFrame({ id: "employee-table", action: "advance" })
+  {{--  Search form  --}}
   <form method="GET" class="mb-4">
     <div class="row g-3 align-items-center">
       <div class="col col-auto mt-2 mt-lg-0">
@@ -21,6 +21,7 @@ title: "Employees"
     </div>
   </form>
 
+  {{--  Per page form  --}}
   <form method="GET" data-controller="onchangeform">
     <div class="row align-items-center">
       <div class="col col-auto">
@@ -46,7 +47,8 @@ title: "Employees"
     </div>
   </form>
 
-  <div class=" mt-4">
+  {{--  Table  --}}
+  <div class="mt-4">
     <table class="table table-hover table-sm table-bordered table-striped">
       <thead>
         <tr>
@@ -59,7 +61,7 @@ title: "Employees"
           </th>
           <th scope="col" class="col-4 text-body">Position</th>
           <th scope="col" class="col-4 text-body">City</th>
-          <th scope="col" class="col-3 text-end p-0">
+          <th scope="col" class="col-3 p-0">
             <a href="{{ employees.toggleSortOrder('salary') }}"
               class="d-flex justify-content-between align-items-center text-body text-decoration-none p-2">
               Salary
@@ -70,11 +72,8 @@ title: "Employees"
       </thead>
       <tbody>
         @each(employee in employees)
-        <tr>
-          <td class="fw-medium">{{ employee.name }}</td>
-          <td class="text-muted">{{ employee.position }}</td>
-          <td class="text-muted">{{ employee.city }}</td>
-          <td class="text-end font-monospace">€{{ employee.salary }}.00</td>
+        <tr data-turbo-prefetch="false" id="table-row-{{employee.id}}">
+          @include('pages/employees/_table_row.edge')
         </tr>
         @endeach
       </tbody>
@@ -94,6 +93,7 @@ title: "Employees"
       <a></a>
       @end
 
+      {{--  Pagination form  --}}
       <form method="GET" data-controller="onchangeform">
         {{-- query strings saved when submitting the form --}}
         @if(employees.getQueryString('order'))
@@ -110,7 +110,7 @@ title: "Employees"
         @end
         <div class="input-group">
           <span class="input-group-text">Page</span>
-          <input class="form-control" type="number" min="1" max="{{ employees.lastPage }}" value="{{ employees.currentPage }}" name="page" id="page" data-action="change->onchangeform#submit">
+          <input class="form-control" type="number" min="1" max="{{ employees.lastPage }}" value="{{ employees.currentPage }}" name="page" id="page" data-action="change->onchangeform#submit" />
           <span class="input-group-text">of {{employees.lastPage}}</span>
         </div>
       </form>

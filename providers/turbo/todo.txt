@@ -14,7 +14,7 @@ Tasks:
    - Using if statements, easier and less confusing
 [] Populate turbo data/state with flashMessages
 [x] Figure out a better way to render multiple templates for streams (turbo drive should only render one template btw)
-[] Add support for all directives on TurboStream and TurboDrive
+[x] Add support for all directives on TurboStream and TurboDrive
 [x] Align with rails api =>
    Ruby: render turbo_stream: turbo_stream.append(:dom_id, partial: "some/template", locals: { message: message })
    JS: turboStream.append("selector", "some/template", { state })
@@ -27,12 +27,14 @@ Tasks:
    Where does this approach break down where we actually need to rely on turbo's handling of csrf-tokens?
      - If using x-csrf-token token we need to make sure that the header is merged and the <meta>-tag with token is attached on every new
        turbo frame and turbo stream
+
 [] Reload the entire view on E_BAD_CSRF_TOKEN + flash message
     ??? <meta name="turbo-visit-control" content="reload">
-[] Turbo Frames
-   [x] Render a minimal layout (<head /> + <turbo /> tags) when a turbo frame request is detected (request.headers["Turbo-Frame"])
+[x] Turbo Frames
+   [-] Render a minimal layout (<head /> + <turbo /> tags) when a turbo frame request is detected (request.headers["Turbo-Frame"])
       https://github.com/hotwired/turbo-rails/blob/main/app/controllers/turbo/frames/frame_request.rb
       NOTE!!! Doesn't seem to actually merge the head on turbo frame requests
+      Discussion https://github.com/hotwired/turbo/issues/1237
    [x] Sets etag header to bust the cache
 [x] Expose TurboFrame & TurboStream classes to DI system (ie construct in provider)
 [] Configure edge plugin to render frames and streams https://github.com/adonisjs/inertia/blob/main/src/plugins/edge/plugin.ts

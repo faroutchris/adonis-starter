@@ -152,3 +152,13 @@ router
   .get('/employees', [EmployeesController, 'index'])
   .as('employees.index')
   .use(middleware.auth())
+
+router
+  .delete('/employees/:id', [EmployeesController, 'delete'])
+  .as('employees.delete')
+  .use(middleware.auth())
+
+router
+  .put('/employees/edit/:id', [EmployeesController, 'update'])
+  .as('employees.update')
+  .use(middleware.auth())

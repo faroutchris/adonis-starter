@@ -1,0 +1,30 @@
+<td class="fw-medium">{{ employee.name }}</td>
+<td class="text-muted">{{ employee.position }}</td>
+<td class="text-muted">{{ employee.city }}</td>
+<td class="text-end fw-light font-monospace text-muted">€{{ employee.salary }}.00</td>
+<td data-controller="dialog" data-action="click->dialog#backdropClose">
+  <dialog data-dialog-target="dialog" id="employee-dialog" class="border rounded shadow-lg p-5 bg-body-tertiary">
+    @turboFrame({ id: "dialog" })
+    <form method="POST" action="{{ route('employees.update', [employee.id]) }}?_method=PUT" class="row">
+      {{ csrfField() }}
+      <div class="col-12">
+        <h5 class="mb-3">Edit Employee</h5>
+        <input class="form-control mb-3" type="text" value="{{ employee.name }}" id="name" name="name" autofocus autocapitalize>
+        <input class="form-control mb-3" type="text" value="{{ employee.city }}" id="city" name="city">
+        <input class="form-control mb-3" type="text" value="{{ employee.position }}" id="position" name="position">
+        <input class="form-control mb-3" type="number" value="{{ employee.salary }}" id="salary" name="salary">
+        <button class="btn btn-primary" type="submit" data-action="dialog#close">Save</button>
+        <button class="btn btn-secondary" type="button" data-action="dialog#close" autofocus>Cancel</button>
+      </div>
+    </form>
+    @end
+  </dialog>
+
+  <button type="button" class="btn btn-link btn-sm p-0" data-action="dialog#open">Edit</button>
+</td>
+<td>
+  <form method="POST" action="{{ route('employees.delete', [employee.id]) }}?_method=DELETE" data-controller="confirm-form-submit"  enctype="text/vnd.turbo-stream.html">
+    {{ csrfField() }}
+    <button type="button" class="btn btn-link btn-sm p-0" data-action="confirm-form-submit#submit">Delete</button>
+  </form>
+</td>
