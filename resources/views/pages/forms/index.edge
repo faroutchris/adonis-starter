@@ -1,0 +1,16 @@
+@component('layout/main', { title: "Form builder" })
+<div class="container mt-5">
+  <ul>
+    @each(form in forms)
+    <li>
+      <a href="{{ route('formbuilder.show', {uuid: form.id}) }}">{{form.title}}</a>
+    </li>
+    @end
+  </ul>
+
+  <form method="POST" action="{{ route('formbuilder.save') }}">
+    {{ csrfField() }}
+    <button type="submit">Create form</button>
+  </form>
+</div>
+@end

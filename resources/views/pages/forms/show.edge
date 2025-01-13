@@ -1,0 +1,10 @@
+@component('layout/main', { title: form.title })
+<div class="container mt-5">
+  <h1>{{form.title}}</h1>
+
+  @each(field in form.fields)
+  <label>{{field.label}} <input type="{{field.type}}" name="{{field.label}}-{{field.id}}" /></label>
+  @end
+</div>
+
+@end

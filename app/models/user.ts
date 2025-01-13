@@ -7,6 +7,7 @@ import type { HasMany, HasOne } from '@adonisjs/lucid/types/relations'
 import { DateTime } from 'luxon'
 import Token from './token.js'
 import Profile from './profile.js'
+import Form from './form.js'
 
 const AuthFinder = withAuthFinder(() => hash.use('scrypt'), {
   uids: ['email'],
@@ -34,6 +35,9 @@ export default class User extends compose(BaseModel, AuthFinder) {
 
   @column.dateTime({ autoCreate: true, autoUpdate: true })
   declare updatedAt: DateTime | null
+
+  @hasMany(() => Form)
+  declare forms: HasMany<typeof Form>
 
   @hasMany(() => Token)
   declare tokens: HasMany<typeof Token>

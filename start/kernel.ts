@@ -25,6 +25,7 @@ server.errorHandler(() => import('#exceptions/handler'))
 server.use([
   () => import('#middleware/container_bindings_middleware'),
   () => import('@adonisjs/static/static_middleware'),
+  () => import('@adonisjs/cors/cors_middleware'),
 ])
 
 /**
@@ -44,6 +45,7 @@ router.use([
  * the routes or the routes group.
  */
 export const middleware = router.named({
+  unsafeShield: () => import('#middleware/unsafe_shield_middleware'),
   guest: () => import('#middleware/guest_middleware'),
   auth: () => import('#middleware/auth_middleware'),
 })

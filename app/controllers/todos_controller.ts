@@ -4,7 +4,6 @@ import type { HttpContext } from '@adonisjs/core/http'
 
 export default class TodosController {
   todo = 'pages/todos/_task'
-
   message = 'pages/todos/_success_notification'
 
   async index({ turboFrame }: HttpContext) {

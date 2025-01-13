@@ -9,6 +9,8 @@
 
 import router from '@adonisjs/core/services/router'
 import { middleware } from './kernel.js'
+import { HttpContext } from '@adonisjs/core/http'
+const FormBuildersController = () => import('#controllers/form_builders_controller')
 const TodosController = () => import('#controllers/todos_controller')
 const ProfilesController = () => import('#controllers/profiles_controller')
 const PasswordResetController = () => import('#controllers/auth/password_reset_controller')
@@ -136,3 +138,33 @@ router.post('/todos', [TodosController, 'save']).as('todos.save').use(middleware
 router.put('/todos/:id', [TodosController, 'update']).as('todos.update').use(middleware.auth())
 router.delete('/todos/:id', [TodosController, 'delete']).as('todos.delete').use(middleware.auth())
 router.get('/todos/lazyloaded', [TodosController, 'lazy']).as('todos.lazy').use(middleware.auth())
+
+/*
+|--------------------------------------------------------------------------
+| Form Builder App
+|--------------------------------------------------------------------------
+|
+| Form builder app and dashboard
+|
+*/
+
+router
+  .post('/:uuid', (ctx: HttpContext) => {
+    return ctx.view.renderRaw('Success')
+  })
+  .where('uuid', router.matchers.uuid())
+  .middleware(middleware.unsafeShield())
+
+router
+  .get('/forms', [FormBuildersController, 'index'])
+  .as('formbuilder.index')
+  .use(middleware.auth())
+router
+  .post('/forms', [FormBuildersController, 'save'])
+  .as('formbuilder.save')
+  .use(middleware.auth())
+router
+  .get('/forms/:uuid', [FormBuildersController, 'show'])
+  .as('formbuilder.show')
+  .where('uuid', router.matchers.uuid())
+  .use(middleware.auth())

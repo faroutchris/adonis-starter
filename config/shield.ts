@@ -17,7 +17,7 @@ const shieldConfig = defineConfig({
    */
   csrf: {
     enabled: true,
-    exceptRoutes: [],
+    exceptRoutes: ['/:uuid'],
     enableXsrfCookie: false,
     methods: ['POST', 'PUT', 'PATCH', 'DELETE'],
   },
