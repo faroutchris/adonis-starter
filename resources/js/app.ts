@@ -7,7 +7,6 @@ import NotificationController from './controllers/notification.js'
 import FormItController from './controllers/form_it.js'
 import ClearFormController from './controllers/clear_form.js'
 import ForceReloadController from './controllers/force_reload.js'
-
 declare global {
   interface Window {
     Stimulus: Application

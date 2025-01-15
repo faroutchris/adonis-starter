@@ -46,19 +46,17 @@ export default class FormItController extends Controller {
     const key = Object.keys(payload)[0]
     const value = payload[key]
 
-    if (hiddenForm && hiddenData) {
-      if (this.hasCsrfValue) {
-        const csrfInput = document.createElement('input')
-        csrfInput.setAttribute('name', '_csrf')
-        csrfInput.setAttribute('value', this.csrfValue)
-        hiddenForm.append(csrfInput)
-      }
-      hiddenData.setAttribute('type', 'text')
-      hiddenData.setAttribute('name', key)
-      hiddenData.setAttribute('value', value)
-      hiddenForm.append(hiddenData)
-      document.body.append(hiddenForm)
-      hiddenForm.requestSubmit()
+    if (this.hasCsrfValue) {
+      const csrfInput = document.createElement('input')
+      csrfInput.setAttribute('name', '_csrf')
+      csrfInput.setAttribute('value', this.csrfValue)
+      hiddenForm.append(csrfInput)
     }
+    hiddenData.setAttribute('type', 'text')
+    hiddenData.setAttribute('name', key)
+    hiddenData.setAttribute('value', value)
+    hiddenForm.append(hiddenData)
+    document.body.append(hiddenForm)
+    hiddenForm.requestSubmit()
   }
 }

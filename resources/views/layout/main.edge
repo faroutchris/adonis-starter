@@ -7,7 +7,8 @@
   <title>Red Digital - {{ $props.get('title') }}</title>
   @vite(['resources/css/app.css', 'resources/js/app.ts'])
 
-  <meta name="turbo-refresh-method" content="morph">
+  {{--
+  <meta name="turbo-refresh-method" content="morph"> --}}
   <meta name="turbo-refresh-scroll" content="preserve">
 </head>
 
@@ -17,6 +18,32 @@
   </header>
 
   {{{ await $slots.main() }}}
+
+  <div class="toast-container position-fixed top-0 end-0 m-4" aria-live="polite" aria-atomic="true"
+    id="toast-notification">
+    @if(flashMessages.has('success'))
+    @include('pages/todos/_success_notification.edge')
+    @end
+
+    @error('E_BAD_CSRF_TOKEN')
+    <div class="toast show bg-warning-subtle border-0" role="alert" aria-live="assertive" aria-atomic="true"
+      data-controller="notification">
+      <div class="toast-header bg-warning-subtle border-0">
+        <strong class="me-auto">Error</strong>
+        <button type="button" class="btn-close ms-2" data-bs-dismiss="toast" aria-label="Close">
+          <span aria-hidden="true"></span>
+        </button>
+      </div>
+      <div class="toast-body" data-controller="force-reload">
+        <p>This document has expired.</p>
+        <p>Wait 5 seconds for page to reload, or reload the page
+          manually.</p>
+      </div>
+    </div>
+    @end
+  </div>
+
+  {{inspect(flashMessages)}}
 
   <footer class="p-5"></footer>
 

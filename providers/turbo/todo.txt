@@ -37,3 +37,6 @@ Tasks:
 [] Expose TurboFrame & TurboStream classes to DI system (ie construct in provider)
    Note: Is this possible in adonis v6? Seems to have been used as a technique for libraries in Adonis v5 a lot
 [] Configure edge plugin to render frames and streams https://github.com/adonisjs/inertia/blob/main/src/plugins/edge/plugin.ts
+
+
+Enable xsrf-token config in config/shield.ts

@@ -2,9 +2,9 @@ import User from '#models/user'
 import { BaseMail } from '@adonisjs/mail'
 
 export default class VerifyEmailNotification extends BaseMail {
-  user: User
   from = 'noreply@reddigital.com'
   subject = 'Verify your email'
+  user: User
 
   constructor(user: User) {
     super()
