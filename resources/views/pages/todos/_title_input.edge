@@ -1,0 +1,12 @@
+<div class="col-4">
+  <label class="visually-hidden" for="title">
+    Todo
+  </label>
+
+  <input id="title" type="text" autocomplete="off" name="title" placeholder="My todo" data-clear-form-target="focus"
+    {{html.attrs({ class: [ 'form-control' , { "is-invalid" : !!errors?.title } ] }) }}>
+
+  @if(errors?.title)
+  <div class="invalid-feedback">{{ errors?.title?.message }}</div>
+  @end
+</div>

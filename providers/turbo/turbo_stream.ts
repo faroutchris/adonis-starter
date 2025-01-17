@@ -100,6 +100,12 @@ export default class TurboStream {
     return this
   }
 
+  async viewRender(templatePath: string, state: Record<string, any>) {
+    this.setHeader()
+
+    return this.ctx.view.render(templatePath, state)
+  }
+
   async render() {
     /* Upgrade response */
     this.setHeader()

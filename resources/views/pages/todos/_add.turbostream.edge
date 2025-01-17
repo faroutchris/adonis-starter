@@ -1,0 +1,17 @@
+<turbo-stream action="update" target="input-title">
+  <template>
+    @include('pages/todos/_title_input')
+  </template>
+</turbo-stream>
+
+<turbo-stream action="prepend" target="task-list">
+  <template>
+    @include('pages/todos/_task')
+  </template>
+</turbo-stream>
+
+<turbo-stream action="prepend" target="toast-notification">
+  <template>
+    @include('pages/todos/_success_notification')
+  </template>
+</turbo-stream>

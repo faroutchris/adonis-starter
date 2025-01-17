@@ -1,6 +1,7 @@
 import app from '@adonisjs/core/services/app'
 import { HttpContext, ExceptionHandler } from '@adonisjs/core/http'
 import type { StatusPageRange, StatusPageRenderer } from '@adonisjs/core/types/http'
+import { errors as vineErrors } from '@vinejs/vine'
 
 export default class HttpExceptionHandler extends ExceptionHandler {
   /**
@@ -34,6 +35,15 @@ export default class HttpExceptionHandler extends ExceptionHandler {
    * response to the client
    */
   async handle(error: unknown, ctx: HttpContext) {
+    // When a controller throws with a validation error
+    if (error instanceof vineErrors.E_VALIDATION_ERROR && ctx.turboStream.isTurboStream()) {
+      const ts = await ctx.turboStream
+        .prepend('pages/todos/_success_notification', { success: `Uh oh` }, 'toast-notification')
+        .update('pages/todos/_title_input', { errors: { title: error.messages[0] } }, 'input-title')
+        .render()
+      return ctx.response.status(400).send(ts)
+    }
+
     return super.handle(error, ctx)
   }
 

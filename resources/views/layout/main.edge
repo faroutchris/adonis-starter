@@ -7,8 +7,7 @@
   <title>Red Digital - {{ $props.get('title') }}</title>
   @vite(['resources/css/app.css', 'resources/js/app.ts'])
 
-  {{--
-  <meta name="turbo-refresh-method" content="morph"> --}}
+  <meta name="turbo-refresh-method" content="morph">
   <meta name="turbo-refresh-scroll" content="preserve">
 </head>
 
@@ -42,8 +41,6 @@
     </div>
     @end
   </div>
-
-  {{inspect(flashMessages)}}
 
   <footer class="p-5"></footer>
 

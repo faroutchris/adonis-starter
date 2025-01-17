@@ -5,6 +5,7 @@ import type { HttpContext } from '@adonisjs/core/http'
 export default class TodosController {
   private templates = {
     index: 'pages/todos/index',
+    inputPartial: 'pages/todos/_title_input',
     taskPartial: 'pages/todos/_task',
     notificationPartial: 'pages/todos/_success_notification',
     lazyPartial: 'pages/todos/_lazy',
@@ -16,27 +17,21 @@ export default class TodosController {
   }
 
   async save({ request, response, session, turboStream }: HttpContext) {
-    // const res = await saveTaskValidator.validate(request.all()).catch((err) => {
-    //   console.log(err)
-    //   return { title: '' }
-    // })
-
-    // const { title } = res
     const { title } = await request.validateUsing(saveTaskValidator)
     const todo = await Todo.create({ title })
 
-    // const success = `Added a new todo ${todo.id}`
-
-    session.flash('success', `Added a new todo ${todo.id}`)
+    const success = `Added a new todo ${todo.id}`
 
     if (turboStream.isTurboStream()) {
-      return (
-        turboStream
-          .prepend(this.templates.taskPartial, { todo }, 'task-list')
-          // .prepend(this.templates.notificationPartial, { success }, 'toast-notification')
-          .render()
-      )
+      return turboStream.viewRender('pages/todos/_add.turbostream.edge', { todo, success })
+      // return turboStream
+      //   .update(this.templates.inputPartial, {}, 'input-title')
+      //   .prepend(this.templates.taskPartial, { todo }, 'task-list')
+      //   .prepend(this.templates.notificationPartial, { success }, 'toast-notification')
+      //   .render()
     }
+
+    session.flash('success', success)
 
     return response.redirect().back()
   }
