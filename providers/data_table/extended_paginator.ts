@@ -61,7 +61,7 @@ export default class ExtendedPaginator<Result>
   }
 
   toggleSortOrder(sort: string) {
-    const order = this.getQueryString('order') === 'desc' ? 'asc' : 'desc'
+    const order = this.getQueryString('order') === 'asc' ? 'desc' : 'asc'
     const newQueryString = this.appendQueryString({ sort, order })
 
     return `${newQueryString}`

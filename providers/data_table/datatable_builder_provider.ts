@@ -1,5 +1,5 @@
+import edge from 'edge.js'
 import Datatable, { DatatableConfig } from '#providers/data_table/data_table'
-import { HttpContext } from '@adonisjs/core/http'
 import type { ApplicationService } from '@adonisjs/core/types'
 import { DatabaseQueryBuilder } from '@adonisjs/lucid/database'
 import { ModelQueryBuilder } from '@adonisjs/lucid/orm'
@@ -47,10 +47,13 @@ export default class DatatableBuilderProvider {
    * The container bindings have booted
    */
   async boot() {
+    edge.global('clamp', function (min: number, max: number, number: number) {
+      return Math.max(min, Math.min(number, max))
+    })
+
     DatabaseQueryBuilder.macro(
       'datatable',
       function (queryString: Record<string, string>, config: DatatableConfig) {
-        HttpContext.get()
         // @ts-ignore
         const self = this as DatabaseQueryBuilder
         return new Datatable(() => self, config).apply(queryString)

@@ -31,8 +31,8 @@ export default class Datatable {
     this.applySorting(query, queryString)
     this.applyFilter(query, queryString)
     this.applySearch(query, queryString)
-    const paginator = await this.applyPaginate(query, queryString)
 
+    const paginator = await this.applyPaginate(query, queryString)
     const extended = new ExtendedPaginator(
       this.config,
       queryString,
@@ -41,6 +41,7 @@ export default class Datatable {
       paginator.currentPage,
       ...paginator.all()
     )
+
     return extended
   }
 

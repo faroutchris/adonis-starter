@@ -17,6 +17,7 @@ const tableConfig = {
   sortable: {
     salary: 'salary',
     name: 'name',
+    city: 'city',
   },
   // mark searchable fields
   searchable: ['name', 'city', 'position'],
@@ -27,6 +28,8 @@ export default class EmployeesController {
     const { turboFrame } = ctx
 
     const employees = await Employee.query().datatable(ctx.request.all(), tableConfig)
+
+    // return response.send(employees)
 
     return turboFrame.render('pages/employees/index', { employees })
   }
@@ -45,7 +48,6 @@ export default class EmployeesController {
 
   async delete({ params, turboStream }: HttpContext) {
     const employee = await Employee.findOrFail(params.id)
-    console.log(employee)
 
     await employee.delete()
 
