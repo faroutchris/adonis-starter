@@ -1,31 +1,28 @@
-# syntax=docker/dockerfile:1
+ARG NODE_IMAGE=node:20.14.0-bookworm-slim
 
-# stage one
-FROM node:20-alpine3.18 AS base
-RUN apk --no-cache add dumb-init
-# Create our user home dir and set owner
+FROM $NODE_IMAGE AS base
+RUN apt-get update && apt-get upgrade -y && apt-get install -y --no-install-recommends curl dumb-init
 RUN mkdir -p /home/node/app && chown node:node /home/node/app
 WORKDIR /home/node/app
 USER node
 RUN mkdir tmp
 
-# stage two
-FROM base AS dependencies
-COPY --chown=node:node ./package*.json ./
-RUN npm ci 
+FROM base AS development
+COPY --chown=node:node package*.json ./
+RUN npm ci
 COPY --chown=node:node . .
 
-# stage three
-FROM dependencies AS build
-RUN npm run build
+FROM development AS build
+RUN node ace build
 
-# stage four
 FROM base AS production
 ENV NODE_ENV=production
-ENV PORT=$PORT
-ENV HOST=0.0.0.0
 COPY --chown=node:node ./package*.json ./
-RUN npm ci --omit="dev"
+RUN npm ci --omit=dev
 COPY --chown=node:node --from=build /home/node/app/build .
-CMD [ "dumb-init", "node", "bin/server.js" ]
-EXPOSE $PORT
+
+COPY --chown=node:node entrypoint.sh /home/node/app
+RUN chmod +x /home/node/app/entrypoint.sh
+
+ENTRYPOINT ["/home/node/app/entrypoint.sh"]
+EXPOSE 3333
