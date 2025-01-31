@@ -29,9 +29,9 @@ services:
       SMTP_HOST: ${SMTP_HOST}
       SMTP_PORT: ${SMTP_PORT}
     command: node build/bin/server.js
-    volumes:
-      - ./:/home/node/app
-      - /home/node/app/node_modules
+    # volumes:
+    #   - ./:/home/node/app
+    #   - /home/node/app/node_modules
     depends_on:
       db:
         condition: service_healthy
