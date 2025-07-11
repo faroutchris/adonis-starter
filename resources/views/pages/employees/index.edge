@@ -6,7 +6,6 @@
 title: "Employees"
 })
 <div class="container mt-5">
-  @turboFrame({ id: "employee-table", action: "advance" })
   {{-- Search form --}}
   <form method="GET" class="mb-4">
     <div class="row g-3 align-items-center">
@@ -49,10 +48,18 @@ title: "Employees"
   </form>
 
   {{-- Table --}}
+  @turboFrame({ id: "employee-table", action: "advance" })
   <div class="mt-4">
     <table class="table table-hover table-sm table-bordered table-striped">
       <thead>
         <tr>
+          <th scope="col" class="col-1 p-0">
+            <a href="{{ employees.toggleSortOrder('id') }}"
+              class="d-flex justify-content-between align-items-center text-body text-decoration-none p-2">
+              ID
+              @!caret({ fill: "primary", direction: employees.getSortOrderFor('id') })
+            </a>
+          </th>
           <th scope="col" class="col-3 p-0">
             <a href="{{ employees.toggleSortOrder('name') }}"
               class="d-flex justify-content-between align-items-center text-body text-decoration-none p-2">
@@ -68,7 +75,7 @@ title: "Employees"
               @!caret({ fill: "primary",direction: employees.getSortOrderFor('city') })
             </a>
           </th>
-          <th scope="col" class="col-3 p-0">
+          <th scope="col" class="col-2 p-0">
             <a href="{{ employees.toggleSortOrder('salary') }}"
               class="d-flex justify-content-between align-items-center text-body text-decoration-none p-2">
               Salary

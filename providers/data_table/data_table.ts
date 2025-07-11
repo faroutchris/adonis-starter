@@ -33,6 +33,7 @@ export default class Datatable {
     this.applySearch(query, queryString)
 
     const paginator = await this.applyPaginate(query, queryString)
+
     const extended = new ExtendedPaginator(
       this.config,
       queryString,
@@ -49,7 +50,7 @@ export default class Datatable {
     const { columns } = queryString
 
     if (columns) {
-      query.select(...columns)
+      query.select(['id', columns])
     } else {
       query.select(...this.config.select)
     }

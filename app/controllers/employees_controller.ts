@@ -15,6 +15,7 @@ const tableConfig = {
   },
   // mark sortable fields
   sortable: {
+    id: 'id',
     salary: 'salary',
     name: 'name',
     city: 'city',
@@ -28,8 +29,6 @@ export default class EmployeesController {
     const { turboFrame } = ctx
 
     const employees = await Employee.query().datatable(ctx.request.all(), tableConfig)
-
-    // return response.send(employees)
 
     return turboFrame.render('pages/employees/index', { employees })
   }

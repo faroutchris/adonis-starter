@@ -13,6 +13,7 @@ thead th:hover {
   width: 100%;
   bottom: 0;
   border: 0;
+  background: transparent;
 }
 
 @media screen and (min-width: 768px) {

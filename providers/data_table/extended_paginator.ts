@@ -18,6 +18,7 @@ export default class ExtendedPaginator<Result>
   declare dtBaseUrl: string
   declare model: LucidModel | null
   declare config: DatatableConfig
+  declare _qs: Record<string, string>
 
   constructor(
     config: DatatableConfig,
@@ -33,15 +34,25 @@ export default class ExtendedPaginator<Result>
     this.queryString(queryString)
   }
 
-  constructQueryStringFrom(qs: Record<string, string>) {
+  // Extends and wraps SimplePaginator query strings since it's private
+  queryString(values: { [key: string]: any }): this {
+    this._qs = values
+    super.queryString(this._qs)
+    return this
+  }
+
+  get queryStringValues(): Readonly<Record<string, any>> {
+    return this._qs
+  }
+
+  private constructQueryStringFrom(qs: Record<string, string>) {
     return Object.entries(qs)
       .map(([key, val]) => `${key}=${val}`)
       .join('&')
   }
 
   clearSearch() {
-    // @ts-ignore
-    const qs = { ...this.qs }
+    const qs = { ...this._qs }
     delete qs.search // remove search
     delete qs.page // reset page
     const newQueryString = this.constructQueryStringFrom(qs)
@@ -49,15 +60,13 @@ export default class ExtendedPaginator<Result>
   }
 
   appendQueryString(appendedQs: Record<string, string>) {
-    // @ts-ignore
-    const qs = { ...this.qs, ...appendedQs }
+    const qs = { ...this._qs, ...appendedQs }
     const newQueryString = this.constructQueryStringFrom(qs)
     return `${this.dtBaseUrl}?${newQueryString}`
   }
 
   getQueryString(key: string) {
-    // @ts-ignore
-    return this.qs[key]
+    return this._qs[key]
   }
 
   toggleSortOrder(sort: string) {

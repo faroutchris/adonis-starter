@@ -5,12 +5,7 @@ export default class DialogController extends Controller {
   declare readonly openValue: boolean
 
   static targets = ['dialog']
-  static values = {
-    open: {
-      type: Boolean,
-      default: false,
-    },
-  }
+  static values = { open: { type: Boolean, default: false } }
 
   initialize() {
     this.forceClose = this.forceClose.bind(this)
@@ -44,7 +39,7 @@ export default class DialogController extends Controller {
   }
 
   backdropClose(event: Event): void {
-    if ((event.target as HTMLElement) === this.dialogTarget) {
+    if (event.target === this.dialogTarget) {
       this.close()
     }
   }
