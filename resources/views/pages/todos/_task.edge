@@ -1,4 +1,4 @@
-@component('turbo_frame', { id: `todo-${todo.id}` })
+@turboFrame({ id: `todo-${todo.id}` })
 <li class="list-group-item d-flex align-items-start">
   <form method="POST" action="{{ route('todos.update', {id: todo.id} ) }}?_method=PUT" class="flex-grow-1"
     data-controller="onchangeform">

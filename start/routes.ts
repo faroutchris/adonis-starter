@@ -10,6 +10,8 @@
 import router from '@adonisjs/core/services/router'
 import { middleware } from './kernel.js'
 import { HttpContext } from '@adonisjs/core/http'
+
+const EmployeesController = () => import('#controllers/employees_controller')
 const FormBuildersController = () => import('#controllers/form_builders_controller')
 const TodosController = () => import('#controllers/todos_controller')
 const ProfilesController = () => import('#controllers/profiles_controller')
@@ -141,6 +143,31 @@ router.get('/todos/lazyloaded', [TodosController, 'lazy']).as('todos.lazy').use(
 
 /*
 |--------------------------------------------------------------------------
+| Employee datatable
+|--------------------------------------------------------------------------
+|
+| Test out some more advanced features for hotwire
+|
+*/
+
+router
+  .get('/employees', [EmployeesController, 'index'])
+  .as('employees.index')
+  .use(middleware.auth())
+
+router
+  .delete('/employees/:id', [EmployeesController, 'delete'])
+  .as('employees.delete')
+  .use(middleware.auth())
+
+router
+  .put('/employees/edit/:id', [EmployeesController, 'update'])
+  .as('employees.update')
+  .use(middleware.auth())
+
+
+/*
+|--------------------------------------------------------------------------
 | Form Builder App
 |--------------------------------------------------------------------------
 |
@@ -154,7 +181,6 @@ router
   })
   .where('uuid', router.matchers.uuid())
   .middleware(middleware.unsafeShield())
-
 router
   .get('/forms', [FormBuildersController, 'index'])
   .as('formbuilder.index')
@@ -167,4 +193,4 @@ router
   .get('/forms/:uuid', [FormBuildersController, 'show'])
   .as('formbuilder.show')
   .where('uuid', router.matchers.uuid())
-  .use(middleware.auth())
+

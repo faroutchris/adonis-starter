@@ -69,6 +69,7 @@
     "@hotwired/turbo": "^8.0.4",
     "@popperjs/core": "^2.11.8",
     "@vinejs/vine": "^2.0.0",
+    "better-sqlite3": "^11.2.1",
     "bootstrap": "^5.3.3",
     "edge.js": "^6.0.2",
     "luxon": "^3.4.4",

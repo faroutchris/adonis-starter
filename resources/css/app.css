@@ -1,4 +1,58 @@
+@import 'bootstrap.min.css';
 .turbo-progress-bar {
   height: 4px;
   background-color: red;
+}
+
+thead th:hover {
+  background: #eee;
+}
+
+#employee-dialog {
+  position: fixed;
+  width: 100%;
+  bottom: 0;
+  border: 0;
+  background: transparent;
+}
+
+@media screen and (min-width: 768px) {
+  #employee-dialog {
+    width: 50%;
+    bottom: unset;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+  }
+}
+
+/* Prevent scrolling while dialog is open */
+body:has(dialog[open]) {
+  overflow: hidden;
+}
+
+@keyframes fade-in {
+  0% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+
+@keyframes fade-out {
+  0% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+  }
+}
+
+dialog[data-dialog-target='dialog'][open] {
+  animation: fade-in 200ms forwards;
+}
+
+dialog[data-dialog-target='dialog'][closing] {
+  animation: fade-out 200ms forwards;
 }
