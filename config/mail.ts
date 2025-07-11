@@ -10,9 +10,15 @@ const mailConfig = defineConfig({
    * options.
    */
   mailers: {
+    resend: transports.resend({
+      key: env.get('RESEND_API_KEY')!,
+      baseUrl: 'https://api.resend.com',
+    }),
+
     dev: transports.smtp({
       host: env.get('SMTP_HOST'),
       port: env.get('SMTP_PORT'),
+      ignoreTLS: env.get('SMTP_IGNORE_TLS'),
       /**
        * Uncomment the auth block if your SMTP
        * server needs authentication

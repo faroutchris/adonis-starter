@@ -11,12 +11,29 @@ services:
     ports:
       - ${PORT}:${PORT}
       - 9229:9229
-    env_file:
-      - .env
+    # env_file:
+    #   - .env
+    environment:
+      TZ: ${TZ}
+      PORT: ${PORT}
+      HOST: ${HOST}
+      LOG_LEVEL: ${LOG_LEVEL}
+      APP_KEY: ${APP_KEY}
+      NODE_ENV: ${NODE_ENV}
+      SESSION_DRIVER: ${SESSION_DRIVER}
+      DB_HOST: ${DB_HOST}
+      DB_PORT: ${DB_PORT}
+      DB_USER: ${DB_USER}
+      DB_PASSWORD: ${DB_PASSWORD}
+      DB_DATABASE: ${DB_DATABASE}
+      SMTP_HOST: ${SMTP_HOST}
+      SMTP_PORT: ${SMTP_PORT}
+      SMTP_IGNORE_TLS: ${SMTP_IGNORE_TLS}
     command: node build/bin/server.js
-    volumes:
-      - ./:/home/node/app
-      - /home/node/app/node_modules
+    # todo -> for dev containers:
+    # volumes:
+    #   - ./:/home/node/app
+    #   - /home/node/app/node_modules
     depends_on:
       db:
         condition: service_healthy

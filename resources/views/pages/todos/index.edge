@@ -10,7 +10,7 @@
   <form class="row row-cols g-3 align-items-start mt-5" method="POST" action="{{ route('todos.save') }}"
     data-controller="clear-form">
     {{ csrfField() }}
-    <div class="col-4">
+    <div class="col-4" data-turbo-track="dynamic">
       <label class="visually-hidden" for="title">
         Todo
       </label>
@@ -37,16 +37,5 @@
     </div>
   </div>
 </main>
-
-<div class="toast-container position-fixed top-0 end-0 m-4" aria-live="polite" aria-atomic="true"
-  id="toast-notification">
-  @if(flashMessages.has('success'))
-  @include('pages/todos/_success_notification.edge')
-  @end
-
-  @error('E_BAD_CSRF_TOKEN')
-  <p data-controller="force-reload"> {{ $message }} </p>
-  @end
-</div>
 
 @end

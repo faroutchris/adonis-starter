@@ -21,14 +21,12 @@ export default class TurboFrame {
       const template = await this.ctx.view.render(templatePath, state)
       const templateDOM = this.parse(template)
       const frame = templateDOM.getElementById(frameId)?.toString() || ''
-
       if (frame.length) {
-        // set etag header so that the cache for this frame isn't served in a regular request
-        this.ctx.response.setEtag(frame)
+        // set etag header so that the cache for this frame isn't served in a regular requestm (???)
+        // this.ctx.response.setEtag(frame)
         return frame
       }
     }
-
     return this.ctx.view.render(templatePath, state)
   }
 }

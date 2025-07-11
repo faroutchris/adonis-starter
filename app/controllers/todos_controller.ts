@@ -3,28 +3,39 @@ import { saveTaskValidator, updateTaskValidator } from '#validators/todo'
 import type { HttpContext } from '@adonisjs/core/http'
 
 export default class TodosController {
-  todo = 'pages/todos/_task'
-
-  message = 'pages/todos/_success_notification'
+  private templates = {
+    index: 'pages/todos/index',
+    taskPartial: 'pages/todos/_task',
+    notificationPartial: 'pages/todos/_success_notification',
+    lazyPartial: 'pages/todos/_lazy',
+  }
 
   async index({ turboFrame }: HttpContext) {
     const todos = await Todo.all()
-
-    return turboFrame.render('pages/todos/index', { todos })
+    return turboFrame.render(this.templates.index, { todos })
   }
 
   async save({ request, response, session, turboStream }: HttpContext) {
-    const { title } = await request.validateUsing(saveTaskValidator)
+    // const res = await saveTaskValidator.validate(request.all()).catch((err) => {
+    //   console.log(err)
+    //   return { title: '' }
+    // })
 
+    // const { title } = res
+    const { title } = await request.validateUsing(saveTaskValidator)
     const todo = await Todo.create({ title })
-    const notification = `Added a new todo ${todo.id}`
-    session.flash('success', notification)
+
+    // const success = `Added a new todo ${todo.id}`
+
+    session.flash('success', `Added a new todo ${todo.id}`)
 
     if (turboStream.isTurboStream()) {
-      return turboStream
-        .prepend(this.todo, { todo }, 'task-list')
-        .update(this.message, { notification }, 'toast-notification')
-        .render()
+      return (
+        turboStream
+          .prepend(this.templates.taskPartial, { todo }, 'task-list')
+          // .prepend(this.templates.notificationPartial, { success }, 'toast-notification')
+          .render()
+      )
     }
 
     return response.redirect().back()
@@ -42,14 +53,23 @@ export default class TodosController {
     return response.redirect().back()
   }
 
-  async delete({ params, response, turboStream }: HttpContext) {
+  async delete({ params, response, turboStream, session }: HttpContext) {
     const todo = await Todo.findByOrFail({ id: params.id })
 
     todo.delete()
 
     if (turboStream.isTurboStream()) {
-      return turboStream.remove(`todo-${todo.id}`).render()
+      return turboStream
+        .remove(`todo-${todo.id}`)
+        .prepend(
+          this.templates.notificationPartial,
+          { success: `Deleted todo ${todo.id}` },
+          'toast-notification'
+        )
+        .render()
     }
+
+    session.flash('success', `Deleted todo ${todo.id}`)
 
     return response.redirect().back()
   }
@@ -59,7 +79,7 @@ export default class TodosController {
     return new Promise((resolve) => {
       setTimeout(() => {
         resolve(
-          turboFrame.render('pages/todos/_lazy', {
+          turboFrame.render(this.templates.lazyPartial, {
             message: 'My eager loaded message',
           })
         )

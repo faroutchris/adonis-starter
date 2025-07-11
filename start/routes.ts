@@ -9,8 +9,10 @@
 
 import router from '@adonisjs/core/services/router'
 import { middleware } from './kernel.js'
+import { HttpContext } from '@adonisjs/core/http'
 
 const EmployeesController = () => import('#controllers/employees_controller')
+const FormBuildersController = () => import('#controllers/form_builders_controller')
 const TodosController = () => import('#controllers/todos_controller')
 const ProfilesController = () => import('#controllers/profiles_controller')
 const PasswordResetController = () => import('#controllers/auth/password_reset_controller')
@@ -162,3 +164,33 @@ router
   .put('/employees/edit/:id', [EmployeesController, 'update'])
   .as('employees.update')
   .use(middleware.auth())
+
+
+/*
+|--------------------------------------------------------------------------
+| Form Builder App
+|--------------------------------------------------------------------------
+|
+| Form builder app and dashboard
+|
+*/
+
+router
+  .post('/:uuid', (ctx: HttpContext) => {
+    return ctx.view.renderRaw('Success')
+  })
+  .where('uuid', router.matchers.uuid())
+  .middleware(middleware.unsafeShield())
+router
+  .get('/forms', [FormBuildersController, 'index'])
+  .as('formbuilder.index')
+  .use(middleware.auth())
+router
+  .post('/forms', [FormBuildersController, 'save'])
+  .as('formbuilder.save')
+  .use(middleware.auth())
+router
+  .get('/forms/:uuid', [FormBuildersController, 'show'])
+  .as('formbuilder.show')
+  .where('uuid', router.matchers.uuid())
+
