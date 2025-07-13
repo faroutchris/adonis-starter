@@ -1,6 +1,6 @@
 import vine from '@vinejs/vine'
 
-export const employeeUpdateValidator = vine.compile(
+export const employeeValidator = vine.compile(
   vine.object({
     name: vine.string().trim().minLength(1).maxLength(256),
     city: vine.string().trim().minLength(1).maxLength(256),

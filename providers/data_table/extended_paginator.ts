@@ -51,10 +51,13 @@ export default class ExtendedPaginator<Result>
       .join('&')
   }
 
-  clearSearch() {
+  clearQueryStrings(queryStrings: string[]) {
     const qs = { ...this._qs }
-    delete qs.search // remove search
-    delete qs.page // reset page
+
+    queryStrings.forEach((queryString) => {
+      delete qs[queryString]
+    })
+
     const newQueryString = this.constructQueryStringFrom(qs)
     return newQueryString.length ? `${this.dtBaseUrl}?${newQueryString}` : this.dtBaseUrl
   }

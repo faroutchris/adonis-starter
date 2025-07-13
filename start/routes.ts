@@ -151,18 +151,32 @@ router.get('/todos/lazyloaded', [TodosController, 'lazy']).as('todos.lazy').use(
 */
 
 router
-  .get('/employees', [EmployeesController, 'index'])
-  .as('employees.index')
-  .use(middleware.auth())
+  .group(() => {
+    router.get('/', [EmployeesController, 'index']).as('employees.index').use(middleware.auth())
 
-router
-  .delete('/employees/:id', [EmployeesController, 'delete'])
-  .as('employees.delete')
-  .use(middleware.auth())
+    router
+      .get('/create', [EmployeesController, 'create'])
+      .as('employees.create')
+      .use(middleware.auth())
 
-router
-  .put('/employees/edit/:id', [EmployeesController, 'update'])
-  .as('employees.update')
+    router
+      .get('/edit/:id', [EmployeesController, 'edit'])
+      .as('employees.edit')
+      .use(middleware.auth())
+
+    router.post('', [EmployeesController, 'store']).as('employees.store').use(middleware.auth())
+
+    router
+      .delete('/:id', [EmployeesController, 'delete'])
+      .as('employees.delete')
+      .use(middleware.auth())
+
+    router
+      .put('/edit/:id', [EmployeesController, 'update'])
+      .as('employees.update')
+      .use(middleware.auth())
+  })
+  .prefix('/employees')
   .use(middleware.auth())
 
 

@@ -1,0 +1,16 @@
+@component('layout/main', {
+title: "Edit Employee"
+})
+<div class="container mt-5">
+  @turboFrame({ id: "employee-form" })
+  @!employeeForm({
+  action: route('employees.update', [employee.id]) + "?_method=PUT",
+  title: "Edit Employee",
+  name: employee.name,
+  city: employee.city,
+  position: employee.position,
+  salary: employee.salary
+  })
+  @end
+</div>
+@end
