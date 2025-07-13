@@ -8,7 +8,7 @@ thead th:hover {
   background: #eee;
 }
 
-#employee-dialog {
+.dialog {
   position: fixed;
   width: 100%;
   bottom: 0;
@@ -17,7 +17,7 @@ thead th:hover {
 }
 
 @media screen and (min-width: 768px) {
-  #employee-dialog {
+  .dialog {
     width: 50%;
     bottom: unset;
     top: 50%;

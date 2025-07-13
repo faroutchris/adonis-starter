@@ -7,6 +7,7 @@ import FormItController from './controllers/form_it.js'
 import ClearFormController from './controllers/clear_form.js'
 import ForceReloadController from './controllers/force_reload.js'
 import DialogController from './controllers/dialog.js'
+import AutofocusController from './controllers/autofocus.js'
 
 declare global {
   interface Window {
@@ -21,3 +22,4 @@ window.Stimulus.register('notification', NotificationController)
 window.Stimulus.register('clear-form', ClearFormController)
 window.Stimulus.register('force-reload', ForceReloadController)
 window.Stimulus.register('dialog', DialogController)
+window.Stimulus.register('autofocus', AutofocusController)

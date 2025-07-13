@@ -1,0 +1,12 @@
+@component('layout/main', {
+title: "Add Employee"
+})
+<div class="container mt-5">
+  @turboFrame({ id: "employee-form" })
+  @!employeeForm({
+  title: "Add Employee",
+  action: route('employees.store')
+  })
+  @end
+</div>
+@end

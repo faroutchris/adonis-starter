@@ -3,6 +3,7 @@ import { DatabaseQueryBuilderContract } from '@adonisjs/lucid/types/querybuilder
 import ExtendedPaginator from './extended_paginator.js'
 
 export type DatatableConfig = {
+  defaultSortKey: string
   baseUrl: string
   pagination: { perPage: number }
   select: string[]
@@ -93,9 +94,14 @@ export default class Datatable {
   private applySorting(query: BuilderContracts, queryString: Record<string, string>) {
     const { sort, order } = queryString
 
+    if (!sort) {
+      query.orderBy(this.config.defaultSortKey || 'id', 'asc')
+    }
+
     for (let sortable in this.config.sortable) {
       if (sortable === sort) {
         query.orderBy(sortable, (order as 'asc' | 'desc') || 'desc')
+        break
       }
     }
   }

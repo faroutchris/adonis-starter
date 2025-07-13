@@ -1,0 +1,34 @@
+<form method="POST" action="{{ action }}">
+  {{ csrfField() }}
+  <h5 class=" mb-3">{{ title }}</h5>
+  <div class="form-group row">
+    <label for="name" class="col-sm-2 col-form-label">Name</label>
+    <div class="col-sm-10">
+      <input class="form-control mb-3" type="text" value="{{ name || '' }}" id="name" name="name"
+        data-controller="autofocus">
+    </div>
+  </div>
+  <div class="form-group row">
+    <label for="city" class="col-sm-2 col-form-label">City</label>
+    <div class="col-sm-10">
+      <input class="form-control mb-3" type="text" value="{{ city || '' }}" id="city" name="city">
+    </div>
+  </div>
+  <div class="form-group row">
+    <label for="position" class="col-sm-2 col-form-label">Position</label>
+    <div class="col-sm-10">
+      <input class="form-control mb-3" type="text" value="{{ position || '' }}" id="position" name="position">
+    </div>
+  </div>
+  <div class="form-group row">
+    <label for="salary" class="col-sm-2 col-form-label">Salary</label>
+    <div class="col-sm-10">
+      <input class="form-control mb-3" type="number" value="{{ salary || '' }}" id="salary" name="salary"
+        inputmode="numeric" pattern="\d*">
+    </div>
+  </div>
+  <div class="d-flex">
+    <button class="btn btn-secondary" type="button" data-action="dialog#close">Cancel</button>
+    <button class="btn btn-primary" type="submit" data-action="dialog#close">Save</button>
+  </div>
+</form>
