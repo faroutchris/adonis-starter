@@ -1,9 +1,10 @@
+import router from '@adonisjs/core/services/router'
 import Employee from '#models/employee'
 import { employeeValidator } from '#validators/employee'
 import type { HttpContext } from '@adonisjs/core/http'
 
 const tableConfig = {
-  defaultSortKey: 'id',
+  defaultSortKey: 'created_at',
   baseUrl: '/employees',
   pagination: { perPage: 10 },
   select: ['*'],
@@ -15,6 +16,8 @@ const tableConfig = {
   },
   // mark sortable fields
   sortable: {
+    updated_at: 'updated_at',
+    created_at: 'created_at',
     id: 'id',
     salary: 'salary',
     name: 'name',
@@ -26,11 +29,14 @@ const tableConfig = {
 
 export default class EmployeesController {
   async index(ctx: HttpContext) {
-    const { turboFrame } = ctx
+    const { turboFrame, view } = ctx
 
     const employees = await Employee.query().datatable(ctx.request.all(), tableConfig)
 
-    return turboFrame.render('pages/employees/index', { employees })
+    if (turboFrame.isTurboFrame()) {
+      return turboFrame.render('pages/employees/index', { employees })
+    }
+    return view.render('pages/employees/index', { employees })
   }
 
   async create({ turboFrame, view }: HttpContext) {
@@ -49,19 +55,19 @@ export default class EmployeesController {
     return view.render('pages/employees/edit')
   }
 
-  async store({ response, request, turboStream }: HttpContext) {
-    console.log(turboStream.isTurboStream())
+  async store({ request, turboStream, response }: HttpContext) {
     const columns = await request.validateUsing(employeeValidator)
+    await Employee.create(columns)
 
-    const employee = await Employee.create(columns)
+    // const redirectUrl = router.builder().qs({ sort: 'created_at', page: 1 }).make('employees.index')
 
-    const saved = await employee.save()
-    console.log(saved)
-    return turboStream
-      .prepend('pages/employees/_table_row.edge', { employee: saved }, 'table-body')
-      .render()
-    // add as first entry in table
-    return response.redirect().back()
+    // if (turboStream.isTurboStream()) {
+    //   return turboStream
+    //     .flash('notice', `Created successfully`, { link: { url: redirectUrl, label: 'View' } })
+    //     .render()
+    // }
+
+    return response.redirect().toRoute('employees.create')
   }
 
   async update({ params, request, turboStream }: HttpContext) {
@@ -72,7 +78,8 @@ export default class EmployeesController {
     const saved = await employee.merge(columns).save()
 
     return turboStream
-      .update('pages/employees/_table_row', { employee: saved }, `table-row-${params.id}`)
+      .replace('pages/employees/_table_row', { employee: saved }, `table-row-${params.id}`)
+      .flash('notice', `Saved`)
       .render()
   }
 

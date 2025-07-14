@@ -1,0 +1,20 @@
+<div class="d-flex flex-column h-100 w-100 rounded border">
+  <div
+    class="bg-body-secondary sticky-top border-bottom p-3 d-flex justify-content-between align-items-center"
+  >
+    <h5 class="m-0">
+      {{ title }}
+    </h5>
+    @if(closeAction)
+      <button type="button" class="btn-close" data-action="{{ closeAction }}" aria-label="Close"></button>
+    @endif
+  </div>
+  <div class="bg-body-secondary flex-grow-1 overflow-auto p-3">
+    {{{ await $slots.content() }}}
+  </div>
+  <div
+    class="bg-body-secondary sticky-bottom border-top p-3 d-flex gap-2 justify-content-end align-items-center"
+  >
+    {{{ await $slots.footer() }}}
+  </div>
+</div>

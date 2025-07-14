@@ -9,15 +9,18 @@ thead th:hover {
 }
 
 .dialog {
-  position: fixed;
-  width: 100%;
-  bottom: 0;
+  min-width: 100vw;
+  min-height: 100vh;
   border: 0;
   background: transparent;
+  margin: 0;
+  padding: 0;
 }
 
 @media screen and (min-width: 768px) {
   .dialog {
+    min-width: unset;
+    min-height: unset;
     width: 50%;
     bottom: unset;
     top: 50%;

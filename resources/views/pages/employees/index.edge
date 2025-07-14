@@ -5,163 +5,213 @@
 @component('layout/main', {
 title: "Employees"
 })
-<div class="container mt-5" data-controller="dialog" data-action="click->dialog#backdropClose">
-  <dialog data-dialog-target="dialog" class="dialog">
-    <div class="border rounded shadow-lg p-5 bg-body-tertiary">
+  <div class="container mt-5" data-controller="dialog" data-action="click->dialog#backdropClose">
+    <dialog data-dialog-target="dialog" class="dialog rounded shadow-lg">
       @turboFrame({ id: "employee-form" })
-      Loading form data
+        @!spinner()
       @end
-    </div>
-  </dialog>
+    </dialog>
 
-  @include('pages/employees/_header.edge')
+    @include('pages/employees/_header.edge')
 
-  {{-- Search form --}}
-  <div class="d-flex justify-content-between align-items-center mb-4">
-    <form method="GET">
-      <div class="row g-3 align-items-center">
-        <div class="col col-auto">
-          <input placeholder="Search" class="form-input form-control" type="text" name="search" id="search"
-            value="{{ employees.getQueryString('search') || '' }}">
-        </div>
-        @if(employees.getQueryString('search'))
-        <div class="col col-auto">
-          <a class="small text-decoration-none" href="{{ employees.clearQueryStrings(['search', 'page']) }}">Clear</a>
-        </div>
-        @end
-      </div>
-    </form>
-
-    {{-- Per page form --}}
-    <form method="GET" data-controller="onchangeform">
-      <div class="row align-items-center">
-        <div class="col col-auto">
-          @if(employees.getQueryString('order'))
-          <input type="hidden" name="order" value="{{employees.getQueryString('order')}}">
-          @end
-          @if(employees.getQueryString('sort'))
-          <input type="hidden" name="sort" value="{{employees.getQueryString('sort')}}">
-          @end
+    {{-- Search form --}}
+    <div class="d-flex justify-content-between align-items-center mb-4">
+      <form method="GET">
+        <div class="row g-3 align-items-center">
+          <div class="col col-auto">
+            <input
+              placeholder="Search"
+              class="form-input form-control"
+              type="text"
+              name="search"
+              id="search"
+              value="{{ employees.getQueryString('search') || '' }}"
+            />
+          </div>
           @if(employees.getQueryString('search'))
-          <input type="hidden" name="search" value="{{employees.getQueryString('search')}}">
+            <div class="col col-auto">
+              <a class="small text-decoration-none" href="{{ employees.clearQueryStrings(['search', 'page']) }}">Clear</a>
+            </div>
           @end
-
-          <select class="form-select form-control" aria-label="Change rows per page" id="perPage" name="perPage"
-            data-action="change->onchangeform#submit">
-            @each(num in perPageList)
-            <option value="{{num}}" {{ html.attrs({ selected: employees.getQueryString('perPage')===String(num) ||
-              num===10 }) }}>
-              {{num}}</option>
-            @endeach
-          </select>
         </div>
+      </form>
+
+      {{-- Per page form --}}
+      <form method="GET" data-controller="onchangeform">
+        <div class="row align-items-center">
+          <div class="col col-auto">
+            @if(employees.getQueryString('order'))
+              <input type="hidden" name="order" value="{{ employees.getQueryString('order') }}" />
+            @end
+            @if(employees.getQueryString('sort'))
+              <input type="hidden" name="sort" value="{{ employees.getQueryString('sort') }}" />
+            @end
+            @if(employees.getQueryString('search'))
+              <input type="hidden" name="search" value="{{ employees.getQueryString('search') }}" />
+            @end
+            
+            <select
+              class="form-select form-control"
+              aria-label="Change rows per page"
+              id="perPage"
+              name="perPage"
+              data-action="change->onchangeform#submit"
+            >
+              @each(num in perPageList)
+                <option
+                  value="{{ num }}"
+                  {{ html.attrs({ selected: employees.getQueryString('perPage')===String(num) ||
+              num===10 }) }}
+                >
+                  {{ num }}
+                </option>
+              @endeach
+            </select>
+          </div>
+        </div>
+      </form>
+    </div>
+
+    {{-- Table --}}
+    @turboFrame({ id: "employee-table", action: "advance" })
+      <div class="mt-4">
+        <table class="table table-hover table-sm table-bordered table-striped">
+          <thead>
+            <tr>
+              <th scope="col" class="col-1 p-0">
+                <a
+                  href="{{ employees.toggleSortOrder('id') }}"
+                  class="d-flex justify-content-between align-items-center text-body text-decoration-none p-2"
+                >
+                  ID
+                  @!caret({ fill: "primary", direction: employees.getSortOrderFor('id') })
+                </a>
+              </th>
+              <th scope="col" class="col-3 p-0">
+                <a
+                  href="{{ employees.toggleSortOrder('name') }}"
+                  class="d-flex justify-content-between align-items-center text-body text-decoration-none p-2"
+                >
+                  Name
+                  @!caret({ fill: "primary", direction: employees.getSortOrderFor('name') })
+                </a>
+              </th>
+              <th scope="col" class="col-4 text-body">
+                Position
+              </th>
+              <th scope="col" class="col-3 p-0">
+                <a
+                  href="{{ employees.toggleSortOrder('city') }}"
+                  class="d-flex justify-content-between align-items-center text-body text-decoration-none p-2"
+                >
+                  City
+                  @!caret({ fill: "primary",direction: employees.getSortOrderFor('city') })
+                </a>
+              </th>
+              <th scope="col" class="col-2 p-0">
+                <a
+                  href="{{ employees.toggleSortOrder('salary') }}"
+                  class="d-flex justify-content-between align-items-center text-body text-decoration-none p-2"
+                >
+                  Salary
+                  @!caret({ fill: "primary",direction: employees.getSortOrderFor('salary') })
+                </a>
+              </th>
+            </tr>
+          </thead>
+          <tbody id="table-body">
+            @each(employee in employees)
+              @include('pages/employees/_table_row.edge')
+            @endeach
+            @if(!(employees.length > 0))
+              <tr>
+                <td colspan="4">
+                  No matching records found
+                </td>
+              </tr>
+            @end
+          </tbody>
+        </table>
       </div>
-    </form>
-  </div>
 
-
-  {{-- Table --}}
-  @turboFrame({ id: "employee-table", action: "advance" })
-  <div class="mt-4">
-    <table class="table table-hover table-sm table-bordered table-striped">
-      <thead>
-        <tr>
-          <th scope="col" class="col-1 p-0">
-            <a href="{{ employees.toggleSortOrder('id') }}"
-              class="d-flex justify-content-between align-items-center text-body text-decoration-none p-2">
-              ID
-              @!caret({ fill: "primary", direction: employees.getSortOrderFor('id') })
+      @if(employees.hasPages)
+        <div class="d-flex flex-row align-items-center justify-content-between">
+          @if (prevPageUrl)
+            <a class="text-decoration-none" href="{{ prevPageUrl }}">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="16"
+                height="16"
+                fill="currentColor"
+                class="bi bi-arrow-left-short"
+                viewBox="0 0 16 16"
+              >
+                <path
+                  fill-rule="evenodd"
+                  d="M12 8a.5.5 0 0 1-.5.5H5.707l2.147 2.146a.5.5 0 0 1-.708.708l-3-3a.5.5 0 0 1 0-.708l3-3a.5.5 0 1 1 .708.708L5.707 7.5H11.5a.5.5 0 0 1 .5.5"
+                />
+              </svg>
+              <span class="small">Prev</span>
             </a>
-          </th>
-          <th scope="col" class="col-3 p-0">
-            <a href="{{ employees.toggleSortOrder('name') }}"
-              class="d-flex justify-content-between align-items-center text-body text-decoration-none p-2">
-              Name
-              @!caret({ fill: "primary", direction: employees.getSortOrderFor('name') })
-            </a>
-          </th>
-          <th scope="col" class="col-4 text-body">Position</th>
-          <th scope="col" class="col-3 p-0">
-            <a href="{{ employees.toggleSortOrder('city') }}"
-              class="d-flex justify-content-between align-items-center text-body text-decoration-none p-2">
-              City
-              @!caret({ fill: "primary",direction: employees.getSortOrderFor('city') })
-            </a>
-          </th>
-          <th scope="col" class="col-2 p-0">
-            <a href="{{ employees.toggleSortOrder('salary') }}"
-              class="d-flex justify-content-between align-items-center text-body text-decoration-none p-2">
-              Salary
-              @!caret({ fill: "primary",direction: employees.getSortOrderFor('salary') })
-            </a>
-          </th>
-        </tr>
-      </thead>
-      <tbody id="table-body">
-        @each(employee in employees)
-        @include('pages/employees/_table_row.edge')
-        @endeach
-        @if(!(employees.length > 0))
-        <tr>
-          <td colspan="4">No matching records found</td>
-        </tr>
-        @end
-      </tbody>
-    </table>
-  </div>
+          @else
+            <a></a>
+          @end
+          
+          {{-- Pagination form --}}
+          <form method="GET" data-controller="onchangeform">
+            {{-- query strings saved when submitting the form --}}
+            @if(employees.getQueryString('order'))
+              <input type="hidden" name="order" value="{{ employees.getQueryString('order') }}" />
+            @end
+            @if(employees.getQueryString('sort'))
+              <input type="hidden" name="sort" value="{{ employees.getQueryString('sort') }}" />
+            @end
+            @if(employees.getQueryString('search'))
+              <input type="hidden" name="search" value="{{ employees.getQueryString('search') }}" />
+            @end
+            @if(employees.getQueryString('perPage'))
+              <input type="hidden" name="perPage" value="{{ employees.getQueryString('perPage') }}" />
+            @end
+            <div class="input-group">
+              <span class="input-group-text">Page</span>
+              <input
+                class="form-control"
+                type="number"
+                min="1"
+                max="{{ employees.lastPage }}"
+                value="{{ employees.currentPage }}"
+                name="page"
+                id="page"
+                data-action="change->onchangeform#submit"
+              />
+              <span class="input-group-text">of {{employees.lastPage}}</span>
+            </div>
+          </form>
 
-  @if(employees.hasPages)
-  <div class="d-flex flex-row align-items-center justify-content-between">
-    @if (prevPageUrl)
-    <a class="text-decoration-none" href="{{ prevPageUrl }}">
-      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-arrow-left-short"
-        viewBox="0 0 16 16">
-        <path fill-rule="evenodd"
-          d="M12 8a.5.5 0 0 1-.5.5H5.707l2.147 2.146a.5.5 0 0 1-.708.708l-3-3a.5.5 0 0 1 0-.708l3-3a.5.5 0 1 1 .708.708L5.707 7.5H11.5a.5.5 0 0 1 .5.5" />
-      </svg>
-      <span class="small">Prev</span>
-    </a>
-    @else
-    <a></a>
-    @end
-
-    {{-- Pagination form --}}
-    <form method="GET" data-controller="onchangeform">
-      {{-- query strings saved when submitting the form --}}
-      @if(employees.getQueryString('order'))
-      <input type="hidden" name="order" value="{{employees.getQueryString('order')}}">
+          @if (nextPageUrl)
+            <a class="text-decoration-none" href="{{ nextPageUrl }}">
+              <span class="small">Next</span>
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="16"
+                height="16"
+                fill="currentColor"
+                class="bi bi-arrow-right-short"
+                viewBox="0 0 16 16"
+              >
+                <path
+                  fill-rule="evenodd"
+                  d="M4 8a.5.5 0 0 1 .5-.5h5.793L8.146 5.354a.5.5 0 1 1 .708-.708l3 3a.5.5 0 0 1 0 .708l-3 3a.5.5 0 0 1-.708-.708L10.293 8.5H4.5A.5.5 0 0 1 4 8"
+                />
+              </svg>
+            </a>
+          @else
+            <a></a>
+          @end
+        </div>
       @end
-      @if(employees.getQueryString('sort'))
-      <input type="hidden" name="sort" value="{{employees.getQueryString('sort')}}">
-      @end
-      @if(employees.getQueryString('search'))
-      <input type="hidden" name="search" value="{{employees.getQueryString('search')}}">
-      @end
-      @if(employees.getQueryString('perPage'))
-      <input type="hidden" name="perPage" value="{{employees.getQueryString('perPage')}}">
-      @end
-      <div class="input-group">
-        <span class="input-group-text">Page</span>
-        <input class="form-control" type="number" min="1" max="{{ employees.lastPage }}"
-          value="{{ employees.currentPage }}" name="page" id="page" data-action="change->onchangeform#submit" />
-        <span class="input-group-text">of {{employees.lastPage}}</span>
-      </div>
-    </form>
-
-    @if (nextPageUrl)
-    <a class="text-decoration-none" href="{{ nextPageUrl }}">
-      <span class="small">Next</span>
-      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-arrow-right-short"
-        viewBox="0 0 16 16">
-        <path fill-rule="evenodd"
-          d="M4 8a.5.5 0 0 1 .5-.5h5.793L8.146 5.354a.5.5 0 1 1 .708-.708l3 3a.5.5 0 0 1 0 .708l-3 3a.5.5 0 0 1-.708-.708L10.293 8.5H4.5A.5.5 0 0 1 4 8" />
-      </svg>
-    </a>
-    @else
-    <a></a>
     @end
   </div>
-  @end
-  @end
-</div>
 @end
+
+@!debug()

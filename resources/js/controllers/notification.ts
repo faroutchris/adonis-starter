@@ -6,7 +6,7 @@ export default class NotificationController extends Controller {
   connect() {
     this.timeoutId = setTimeout(() => {
       this.element.remove()
-    }, 4000)
+    }, 6000)
   }
 
   disconnect(): void {

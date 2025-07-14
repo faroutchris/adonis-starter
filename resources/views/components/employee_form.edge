@@ -1,34 +1,119 @@
-<form method="POST" action="{{ action }}">
-  {{ csrfField() }}
-  <h5 class=" mb-3">{{ title }}</h5>
-  <div class="form-group row">
-    <label for="name" class="col-sm-2 col-form-label">Name</label>
-    <div class="col-sm-10">
-      <input class="form-control mb-3" type="text" value="{{ name || '' }}" id="name" name="name"
-        data-controller="autofocus">
-    </div>
-  </div>
-  <div class="form-group row">
-    <label for="city" class="col-sm-2 col-form-label">City</label>
-    <div class="col-sm-10">
-      <input class="form-control mb-3" type="text" value="{{ city || '' }}" id="city" name="city">
-    </div>
-  </div>
-  <div class="form-group row">
-    <label for="position" class="col-sm-2 col-form-label">Position</label>
-    <div class="col-sm-10">
-      <input class="form-control mb-3" type="text" value="{{ position || '' }}" id="position" name="position">
-    </div>
-  </div>
-  <div class="form-group row">
-    <label for="salary" class="col-sm-2 col-form-label">Salary</label>
-    <div class="col-sm-10">
-      <input class="form-control mb-3" type="number" value="{{ salary || '' }}" id="salary" name="salary"
-        inputmode="numeric" pattern="\d*">
-    </div>
-  </div>
-  <div class="d-flex">
-    <button class="btn btn-secondary" type="button" data-action="dialog#close">Cancel</button>
-    <button class="btn btn-primary" type="submit" data-action="dialog#close">Save</button>
-  </div>
+@let(inputClasses = [
+'form-control',
+{ "is-invalid" : flashMessages.has($props.errorKey) }
+])
+<form
+  method="POST"
+  action="{{ action }}"
+  novalidate
+  data-controller="input-validation"
+  data-action="submit->input-validation#handleSubmit submit->dialog#close"
+>
+  @modal({ title, closeAction: "dialog#close" })
+    @slot('content')
+      {{ csrfField() }}
+      <div class="form-group row mb-3">
+        <label for="name" class="col-sm-2 col-form-label">Name</label>
+        <div class="col-sm-10">
+          <input
+            type="text"
+            value="{{ name || '' }}"
+            id="name"
+            name="name"
+            data-input-validation-target="input"
+            data-validates='[{"type":"not-empty","message":"Please add a name for the employee"}]'
+            data-valid-class="is-valid"
+            data-invalid-element="#name-invalid"
+            data-invalid-class="is-invalid"
+            {{ html.attrs({class: inputClasses}) }}
+          />
+          <div data-input-validation-target="feedback" id="name-invalid" class="invalid-feedback">
+            @if (flashMessages.has($props.errorKey))
+              {{ flashMessages.get($props.errorKey) }}
+            @end
+          </div>
+        </div>
+      </div>
+
+      <div class="form-group row mb-3">
+        <label for="city" class="col-sm-2 col-form-label">City</label>
+        <div class="col-sm-10">
+          <input
+            type="text"
+            value="{{ city || '' }}"
+            id="city"
+            name="city"
+            data-input-validation-target="input"
+            data-validates='[{"type":"not-empty","message":"Please add a city of residence for the employee"}]'
+            data-valid-class="is-valid"
+            data-invalid-element="#city-invalid"
+            data-invalid-class="is-invalid"
+            {{ html.attrs({class: inputClasses}) }}
+          />
+          <div data-input-validation-target="feedback" id="city-invalid" class="invalid-feedback">
+            @if (flashMessages.has($props.errorKey))
+              {{ flashMessages.get($props.errorKey) }}
+            @end
+          </div>
+        </div>
+      </div>
+      <div class="form-group row mb-3">
+        <label for="position" class="col-sm-2 col-form-label">Position</label>
+        <div class="col-sm-10">
+          <input
+            type="text"
+            value="{{ position || '' }}"
+            id="position"
+            name="position"
+            data-input-validation-target="input"
+            data-validates='[{"type":"not-empty","message":"Please add job position"}]'
+            data-valid-class="is-valid"
+            data-invalid-element="#position-invalid"
+            data-invalid-class="is-invalid"
+            {{ html.attrs({class: inputClasses}) }}
+          />
+          <div data-input-validation-target="feedback" id="position-invalid" class="invalid-feedback">
+            @if (flashMessages.has($props.errorKey))
+              {{ flashMessages.get($props.errorKey) }}
+            @end
+          </div>
+        </div>
+      </div>
+      <div class="form-group row mb-3">
+        <label for="salary" class="col-sm-2 col-form-label">Salary</label>
+        <div class="col-sm-10">
+          <input
+            type="number"
+            value="{{ salary || '' }}"
+            id="salary"
+            name="salary"
+            inputmode="numeric"
+            data-input-validation-target="input"
+            data-validates='[
+              {"type":"number","message":"Salary is not a number"}, 
+            ]'
+            data-valid-class="is-valid"
+            data-invalid-element="#salary-invalid"
+            data-invalid-class="is-invalid"
+            {{ html.attrs({class: inputClasses}) }}
+          />
+          <div data-input-validation-target="feedback" id="salary-invalid" class="invalid-feedback">
+            @if (flashMessages.has($props.errorKey))
+              {{ flashMessages.get($props.errorKey) }}
+            @end
+          </div>
+        </div>
+      </div>
+    @end
+        
+    @slot("footer")
+      <button class="btn btn-primary" type="submit">Save</button>
+      <button class="btn btn-secondary" type="button" data-action="dialog#close">Cancel</button>
+    @end
+  @end
 </form>
+{{--
+data-validates='[
+              {"type":"number","message":"Salary is not a number"},
+              {"type": "integer", "message": "Salary must be a whole number. Remove decimals"}
+]' --}}

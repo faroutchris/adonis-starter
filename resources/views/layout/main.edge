@@ -13,17 +13,23 @@
 </head>
 
 <body>
+  {{-- doesn't need to be a turboframe --}}
+
   <header>
     @include('partials/global-nav')
   </header>
 
   {{{ await $slots.main() }}}
 
+  @turboFrame({ id: "flash" })
+  @!flash()
+  @end
+
+  @if(flashMessages.has('success'))
+  @include('pages/todos/_success_notification.edge')
+  @end
   <div class="toast-container position-fixed top-0 end-0 m-4" aria-live="polite" aria-atomic="true"
     id="toast-notification">
-    @if(flashMessages.has('success'))
-    @include('pages/todos/_success_notification.edge')
-    @end
 
     @error('E_BAD_CSRF_TOKEN')
     <div class="toast show bg-warning-subtle border-0" role="alert" aria-live="assertive" aria-atomic="true"
@@ -42,9 +48,6 @@
     </div>
     @end
   </div>
-
-  {{inspect(flashMessages)}}
-
   <footer class="p-5"></footer>
 
   {{-- <div class="toast-container position-fixed bottom-0 end-0 m-4" aria-live="polite" aria-atomic="true">

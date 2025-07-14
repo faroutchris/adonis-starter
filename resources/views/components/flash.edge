@@ -1,0 +1,36 @@
+<div
+  class="toast-container position-fixed top-0 end-0 mx-4 mt-5"
+  aria-live="polite"
+  aria-atomic="true"
+  id="toast-notification"
+>
+
+  @if(flash?.notice)
+    <div
+      class="toast show bg-success-subtle border-0"
+      role="alert"
+      aria-live="assertive"
+      aria-atomic="true"
+      data-controller="notification"
+    >
+      <div class="toast-header bg-success-subtle border-0">
+        <strong class="me-auto">Success</strong>
+        <button type="button" class="btn-close ms-2" data-bs-dismiss="toast" aria-label="Close">
+          <span aria-hidden="true">
+          </button>
+        </div>
+        <div class="toast-body">
+          {{ flash.notice }}
+          @if(link?.url)
+            <a href="{{ link.url }}" target="_top">{{ link?.label || 'Link' }}</a>
+          @endif
+        </div>
+      </div>
+    @endif
+    
+    @if(flash?.error)
+      <div class="alert alert-error">
+        {{ flash.error }}
+      </div>
+    @endif
+  </div>

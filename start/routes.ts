@@ -179,7 +179,6 @@ router
   .prefix('/employees')
   .use(middleware.auth())
 
-
 /*
 |--------------------------------------------------------------------------
 | Form Builder App
@@ -207,4 +206,3 @@ router
   .get('/forms/:uuid', [FormBuildersController, 'show'])
   .as('formbuilder.show')
   .where('uuid', router.matchers.uuid())
-

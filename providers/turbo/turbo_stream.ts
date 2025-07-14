@@ -100,12 +100,24 @@ export default class TurboStream {
     return this
   }
 
+  // Special case, hardcoded to a component and id, don't ship
+  flash(type: 'notice' | 'error', message: string, state?: Record<string, any>) {
+    this.update('components/flash.edge', { flash: { [type]: message }, ...state }, 'flash')
+    return this
+  }
+
+  shareFlashMessages() {
+    this.ctx.view.share({ flash: this.ctx.session.flashMessages?.all() })
+  }
+
   async render() {
     /* Upgrade response */
     this.setHeader()
 
     if (this.templates.length === 0)
       throw new Exception('No templates have been added for rendering')
+
+    this.shareFlashMessages()
 
     if (this.templates.length > 1) return this.renderAll(this.templates)
 

@@ -95,7 +95,7 @@ export default class Datatable {
     const { sort, order } = queryString
 
     if (!sort) {
-      query.orderBy(this.config.defaultSortKey || 'id', 'asc')
+      query.orderBy(this.config.defaultSortKey || 'created_at', 'desc')
     }
 
     for (let sortable in this.config.sortable) {

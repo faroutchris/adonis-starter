@@ -1,12 +1,21 @@
 @component('layout/main', {
 title: "Add Employee"
 })
-<div class="container mt-5">
-  @turboFrame({ id: "employee-form" })
-  @!employeeForm({
-  title: "Add Employee",
-  action: route('employees.store')
-  })
-  @end
-</div>
+  <div class="container mt-5">
+    @turboFrame({ id: "employee-form" })
+      @!employeeForm({
+        title: "Add Employee",
+        action: route('employees.store')
+      })
+      <turbo-stream action="update" target="flash">
+        <template>
+          @!flash({
+          flash: {
+          notice: "Hello Turbo stream from turbo template"
+          }
+          })
+        </template>
+      </turbo-stream>
+    @end
+  </div>
 @end
