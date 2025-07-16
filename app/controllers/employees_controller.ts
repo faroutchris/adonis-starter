@@ -1,6 +1,6 @@
 import router from '@adonisjs/core/services/router'
 import Employee from '#models/employee'
-import { employeeValidator } from '#validators/employee'
+import { employeeValidator, testEmployeeValidator } from '#validators/employee'
 import type { HttpContext } from '@adonisjs/core/http'
 
 const tableConfig = {
@@ -59,13 +59,18 @@ export default class EmployeesController {
     const columns = await request.validateUsing(employeeValidator)
     await Employee.create(columns)
 
-    // const redirectUrl = router.builder().qs({ sort: 'created_at', page: 1 }).make('employees.index')
+    const redirectUrl = router.builder().qs({ sort: 'created_at', page: 1 }).make('employees.index')
 
-    // if (turboStream.isTurboStream()) {
-    //   return turboStream
-    //     .flash('notice', `Created successfully`, { link: { url: redirectUrl, label: 'View' } })
-    //     .render()
-    // }
+    if (turboStream.isTurboStream()) {
+      return (
+        turboStream
+          // .flash('notice', 'Employee created successfully', {
+          //   link: { url: redirectUrl, label: 'View' },
+          // })
+          .invoke('employee-form', 'close')
+          .render()
+      )
+    }
 
     return response.redirect().toRoute('employees.create')
   }
@@ -78,8 +83,8 @@ export default class EmployeesController {
     const saved = await employee.merge(columns).save()
 
     return turboStream
-      .replace('pages/employees/_table_row', { employee: saved }, `table-row-${params.id}`)
-      .flash('notice', `Saved`)
+      .replace('pages/employees/_table_row', { employee: saved }, 'table-row-' + params.id)
+      .flash('notice', 'Saved')
       .render()
   }
 
@@ -88,6 +93,6 @@ export default class EmployeesController {
 
     await employee.delete()
 
-    return turboStream.remove(`table-row-${params.id}`).render()
+    return turboStream.remove('table-row-' + params.id).render()
   }
 }

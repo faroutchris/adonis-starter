@@ -6,6 +6,8 @@ type TurboDirectives = {
   action?: string
   childrenOnly?: boolean // morph
   requestId?: string // refresh
+  method?: string // invoke
+  args?: string // invoke - JSON stringified arguments
 }
 
 export class TurboTemplate {
@@ -25,7 +27,14 @@ export default class TurboStream {
 
   templates: TurboTemplate[] = []
 
-  private partial = `<turbo-stream action="{{directives.action}}" target="{{directives.target}}"><template>{{{ body }}}</template></turbo-stream>`
+  private partial = `<turbo-stream action="{{directives.action}}" target="{{directives.target}}"
+    @if(directives.method)
+      method="{{directives.method}}"
+    @endif
+    @if(directives.args)
+      args="{{directives.args}}"
+    @endif
+    <template>{{{ body }}}</template></turbo-stream>`
 
   private static MIME_TYPE = 'text/vnd.turbo-stream.html'
 
@@ -100,6 +109,28 @@ export default class TurboStream {
     return this
   }
 
+  invoke(target: string, method: string, args: any[] = []) {
+    console.log(`TurboStream.invoke called with target: ${target}, method: ${method}, args:`, args)
+    console.log(`Templates before push: ${this.templates.length}`)
+
+    const template = new TurboTemplate(
+      '',
+      {},
+      {
+        action: 'invoke',
+        target,
+        method,
+        args: JSON.stringify(args),
+      }
+    )
+    this.templates.push(template)
+
+    console.log(`Templates after push: ${this.templates.length}`)
+    console.log(`Template created:`, JSON.stringify(template, null, 2))
+
+    return this
+  }
+
   // Special case, hardcoded to a component and id, don't ship
   flash(type: 'notice' | 'error', message: string, state?: Record<string, any>) {
     this.update('components/flash.edge', { flash: { [type]: message }, ...state }, 'flash')
@@ -128,6 +159,9 @@ export default class TurboStream {
     const { directives, path, state } = template
 
     if (directives?.action === 'remove')
+      return this.ctx.view.renderRaw(this.partial, { body: '', directives })
+
+    if (directives?.action === 'invoke')
       return this.ctx.view.renderRaw(this.partial, { body: '', directives })
 
     if (!path) throw new Exception('No template found')

@@ -9,6 +9,7 @@ import ForceReloadController from './controllers/force_reload.js'
 import DialogController from './controllers/dialog.js'
 import AutofocusController from './controllers/autofocus.js'
 import InputValidationController from './controllers/input_validation.js'
+import { initializeTurboInvokeHandler } from './turbo_invoke_handler.js'
 
 declare global {
   interface Window {
@@ -25,3 +26,6 @@ window.Stimulus.register('force-reload', ForceReloadController)
 window.Stimulus.register('dialog', DialogController)
 window.Stimulus.register('autofocus', AutofocusController)
 window.Stimulus.register('input-validation', InputValidationController)
+
+// Initialize Turbo Stream invoke action handler
+initializeTurboInvokeHandler()

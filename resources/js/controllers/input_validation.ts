@@ -14,10 +14,12 @@ type ErrorEntry = {
 
 export default class InputValidationController extends Controller<HTMLFormElement> {
   static targets = ['input', 'feedback']
-  declare private errors: ErrorEntry[]
   declare readonly hasInputTarget: boolean
   declare readonly inputTarget: HTMLInputElement
   declare readonly inputTargets: HTMLInputElement[]
+
+  // Track error state per input element
+  private inputErrorStates = new WeakMap<HTMLInputElement, ErrorEntry[]>()
 
   connect() {
     if (this.element instanceof HTMLFormElement) {
@@ -47,13 +49,14 @@ export default class InputValidationController extends Controller<HTMLFormElemen
 
   handleSubmit = (event: Event) => {
     let valid = true
-    console.log(this.errors)
 
     this.inputTargets.forEach((input) => {
       input.dataset.dirty = 'true'
       this.validateInput(input)
-      const invalidClass = input.getAttribute('data-invalid-class')
-      if (invalidClass && input.classList.contains(invalidClass)) {
+
+      // Check if this input has any errors
+      const inputErrors = this.inputErrorStates.get(input) || []
+      if (inputErrors.length > 0) {
         valid = false
       }
     })
@@ -85,6 +88,120 @@ export default class InputValidationController extends Controller<HTMLFormElemen
   validateInput(input: HTMLInputElement) {
     const value = input.value
     const validatesAttribute = input.getAttribute('data-validates')
+
+    // Check if there's a server error that should be preserved
+    const hasServerError = input.dataset.serverError !== undefined
+
+    // Process client-side validation rules for this input
+    const clientErrors = this.processValidationRules(value, validatesAttribute)
+
+    // Get or initialize error state for this input
+    let inputErrors: ErrorEntry[] = []
+
+    // If there's a server error and no client-side validation errors, show the server error
+    if (hasServerError && clientErrors.length === 0) {
+      inputErrors = [
+        {
+          type: 'server-error',
+          message: input.dataset.serverError || '',
+        },
+      ]
+    } else {
+      inputErrors = clientErrors
+    }
+
+    // Store the error state for this specific input
+    this.inputErrorStates.set(input, inputErrors)
+
+    // Apply validation state using the shared logic
+    this.applyValidationState(input, inputErrors.length === 0, inputErrors)
+  }
+
+  serverError(fieldName: string, message: string) {
+    console.log(
+      `InputValidationController.serverError called with fieldName: ${fieldName}, message: ${message}`
+    )
+
+    // Find input element by field name
+    const input = this.findInputByFieldName(fieldName)
+    if (!input) {
+      console.warn(`Input element not found for field: ${fieldName}`)
+      return
+    }
+
+    console.log(`Found input element:`, input)
+
+    // Mark input as dirty to enable client-side validation on subsequent changes
+    input.dataset.dirty = 'true'
+
+    // Store the server error for this specific input
+    input.dataset.serverError = message
+
+    // Set server error in the per-input error state
+    const serverErrorEntry: ErrorEntry[] = [
+      {
+        type: 'server-error',
+        message: message,
+      },
+    ]
+
+    this.inputErrorStates.set(input, serverErrorEntry)
+    console.log(`Set error state for input:`, serverErrorEntry)
+
+    // Apply invalid styling and display error message using existing validation UI logic
+    this.applyValidationState(input, false, serverErrorEntry)
+    console.log(`Applied validation state to input`)
+
+    // Set up listener to clear server error when user starts typing
+    const clearServerError = () => {
+      delete input.dataset.serverError
+      input.removeEventListener('input', clearServerError)
+      // Re-validate with client-side rules if input is dirty
+      if (input.dataset.dirty) {
+        this.validateInput(input)
+      }
+    }
+
+    // Remove any existing listener to avoid duplicates
+    input.removeEventListener('input', clearServerError)
+    input.addEventListener('input', clearServerError)
+  }
+
+  private findInputByFieldName(fieldName: string): HTMLInputElement | null {
+    // Try direct ID match first
+    let input = this.element.querySelector(`#${fieldName}`) as HTMLInputElement
+    if (input && input instanceof HTMLInputElement) {
+      return input
+    }
+
+    // Try name attribute match
+    input = this.element.querySelector(`[name="${fieldName}"]`) as HTMLInputElement
+    if (input && input instanceof HTMLInputElement) {
+      return input
+    }
+
+    // Handle nested field names (e.g., "user.email" -> "user-email")
+    const normalizedFieldName = fieldName.replace(/\./g, '-')
+    input = this.element.querySelector(`#${normalizedFieldName}`) as HTMLInputElement
+    if (input && input instanceof HTMLInputElement) {
+      return input
+    }
+
+    // Handle array field names (e.g., "items.0.name" -> "items-0-name")
+    const arrayFieldName = fieldName.replace(/\./g, '-')
+    input = this.element.querySelector(`#${arrayFieldName}`) as HTMLInputElement
+    if (input && input instanceof HTMLInputElement) {
+      return input
+    }
+
+    return null
+  }
+
+  private applyValidationState(
+    input: HTMLInputElement,
+    isValid: boolean,
+    inputErrors: ErrorEntry[] = []
+  ) {
     const invalidClass = input.getAttribute('data-invalid-class')
     const validClass = input.getAttribute('data-valid-class')
     const invalidFeedbackElementRef = input.getAttribute('data-invalid-element')
@@ -92,9 +209,7 @@ export default class InputValidationController extends Controller<HTMLFormElemen
       ? this.element.querySelector(invalidFeedbackElementRef)
       : null
 
-    this.processValidationRules(value, validatesAttribute)
-
-    // reset
+    // Reset classes
     if (invalidClass) input.classList.remove(invalidClass)
     if (validClass) input.classList.remove(validClass)
     if (invalidElement) {
@@ -102,29 +217,29 @@ export default class InputValidationController extends Controller<HTMLFormElemen
       invalidElement.textContent = ''
     }
 
-    // update
-    if (this.errors.length > 0) {
+    // Apply appropriate state
+    if (!isValid && inputErrors.length > 0) {
       if (invalidClass) input.classList.add(invalidClass)
       if (invalidElement) {
-        const firstError = this.errors[0]
+        const firstError = inputErrors[0]
         invalidElement.classList.add(invalidClass ?? '')
         invalidElement.textContent = firstError.message || ''
       }
-    } else {
+    } else if (isValid) {
       if (validClass) input.classList.add(validClass)
     }
   }
 
-  processValidationRules(value: string, validatesAttribute: string | null) {
-    this.errors = []
-    if (!validatesAttribute) return []
+  processValidationRules(value: string, validatesAttribute: string | null): ErrorEntry[] {
+    const errors: ErrorEntry[] = []
+    if (!validatesAttribute) return errors
     let rules: ValidationRule[] = []
 
     try {
       rules = JSON.parse(validatesAttribute)
     } catch (e) {
       console.error('Invalid JSON in data-validates attribute:', validatesAttribute)
-      return []
+      return errors
     }
 
     for (const rule of rules) {
@@ -136,7 +251,7 @@ export default class InputValidationController extends Controller<HTMLFormElemen
               Validate.length(value, min, max)
             } catch (e) {
               if (Validate.isValidationError(e)) {
-                this.errors.push({
+                errors.push({
                   type: e.message,
                   message: rule.message,
                 })
@@ -149,7 +264,7 @@ export default class InputValidationController extends Controller<HTMLFormElemen
             Validate.isNumber(value)
           } catch (e) {
             if (Validate.isValidationError(e)) {
-              this.errors.push({
+              errors.push({
                 type: e.message,
                 message: rule.message,
               })
@@ -161,7 +276,7 @@ export default class InputValidationController extends Controller<HTMLFormElemen
             Validate.isInteger(value)
           } catch (e) {
             if (Validate.isValidationError(e)) {
-              this.errors.push({
+              errors.push({
                 type: e.message,
                 message: rule.message,
               })
@@ -173,7 +288,7 @@ export default class InputValidationController extends Controller<HTMLFormElemen
             Validate.isNotEmpty(value)
           } catch (e) {
             if (Validate.isValidationError(e)) {
-              this.errors.push({
+              errors.push({
                 type: e.message,
                 message: rule.message,
               })
@@ -185,7 +300,7 @@ export default class InputValidationController extends Controller<HTMLFormElemen
             Validate.isEmail(value)
           } catch (e) {
             if (Validate.isValidationError(e)) {
-              this.errors.push({
+              errors.push({
                 type: e.message,
                 message: rule.message,
               })
@@ -197,7 +312,7 @@ export default class InputValidationController extends Controller<HTMLFormElemen
             Validate.isStrongPassword(value)
           } catch (e) {
             if (Validate.isValidationError(e)) {
-              this.errors.push({
+              errors.push({
                 type: e.message,
                 message: rule.message,
               })
@@ -206,5 +321,7 @@ export default class InputValidationController extends Controller<HTMLFormElemen
           break
       }
     }
+
+    return errors
   }
 }

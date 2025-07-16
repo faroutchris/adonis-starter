@@ -7,7 +7,7 @@
   action="{{ action }}"
   novalidate
   data-controller="input-validation"
-  data-action="submit->input-validation#handleSubmit submit->dialog#close"
+  data-action="submit->input-validation#handleSubmit"
 >
   @modal({ title, closeAction: "dialog#close" })
     @slot('content')
