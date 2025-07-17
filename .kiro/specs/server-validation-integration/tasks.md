@@ -46,7 +46,7 @@
   - Verify error state transitions work correctly
   - _Requirements: 3.1, 3.2, 3.3_
 
-- [ ] 8. Add fallback handling for non-Turbo requests
+- [x] 8. Add fallback handling for non-Turbo requests
   - Ensure existing error handling continues to work for non-Turbo Stream requests
   - Maintain backward compatibility with flash message error display
   - Test that forms without client-side validation still receive server errors appropriately
